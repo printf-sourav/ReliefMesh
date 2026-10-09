@@ -148,3 +148,10 @@ The user explicitly expanded scope after the original prototype freeze. Use `doc
 - [ ] Deliver final APK checksum and exact source commit after source freeze.
 - [ ] Install on both physical phones and complete all radio/permission/restart/interruption/conflict/storage-failure acceptance checks.
 - [ ] Configure a reachable live ReliefMesh backend and complete the frontend Hugging Face analyze/edit/save/review loop.
+
+### Stopped by user — Developer 1 continuation
+
+- [x] Pushed source freeze `975fa80`; final nine browser scenarios, expanded actual HTTP smoke and final synced APK assembly passed. Preserved generated APK outside tracked Git files.
+- [x] Stop owned 8001/5173/4173 processes and write `prompts/developer-1-continuation.md` with exact evidence/tooling/blockers/next steps; update handoff and save/push documentation checkpoint.
+- [ ] Developer 1: verify/deliver separate APK artifact, SHA-256 and source identity; install and execute all physical two-phone/native acceptance checks.
+- [ ] Developer 1: complete live frontend Hugging Face loop and final review PR/compare delivery, retaining honest limitations and no main merge/deployment.

@@ -59,3 +59,7 @@ No connected devices were listed by adb. Install the same APK on both physical p
 No reachable configured live ReliefMesh backend was available: 8000 health is 404 and 8002/8080 were unreachable outside the disposable test. This checkout has no backend `.env` and its process has no HF token. A reachable backend origin or backend-only environment-file path is required for the frontend genuine Hugging Face analyze/edit/save/review loop. The backend owner records separate live Gemma/semantic evidence; this frontend run used fixtures. Keep semantic unavailability disclosed until the chosen runtime/cache is verified. Deferred transport never automatically invokes AI.
 
 The branch is reviewable with these limitations; full acceptance is incomplete. Do not merge main or deploy. PR creation previously failed with GitHub integration 403 `Resource not accessible by integration`; the pushed [compare view](https://github.com/printf-sourav/ReliefMesh/compare/main...feature/frontend-demo) remains available.
+
+## Stopped and handed over
+
+Final browser/actual HTTP checks reran successfully on implementation commit `975fa80`, including exact recovered-photo bytes and original cleanup after replacement acknowledgment. Final APK packaging after web sync passed in 47s. At the user's request all frontend/test servers on 8001/5173/4173 were stopped. Developer 1's remaining-work prompt is `prompts/developer-1-continuation.md`; artifact/checksum, physical devices, live frontend inference and final review delivery remain open.

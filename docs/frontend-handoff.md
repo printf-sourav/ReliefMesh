@@ -110,3 +110,13 @@ Actual outcomes on the integrated source:
 - `adb devices -l` returned **no devices**. No install/launch/physical radio, permissions, native picker or two-phone durability proof is claimed. A third device remains necessary for tested multi-hop.
 
 README/demo/Android docs now reflect the available toolchain and successful APK compilation. Next: freeze/push the source, rebuild its final synced web assets, verify APK signature/identity, deliver `ReliefMesh-demo.apk` with checksum/source commit, then install on both connected phones and execute the complete relay scenario. A reachable live backend/environment-file path is still needed for the frontend Hugging Face loop; fixture evidence remains distinct. PR creation previously failed with connector 403; retry only the reviewable draft after the artifact checkpoint. No main merge/deployment is authorized.
+
+## User stop and Developer 1 handoff
+
+The user explicitly stopped all work in this chat and requested a continuation prompt for Developer 1. Resume instructions are in `prompts/developer-1-continuation.md`; no new thread/message was dispatched.
+
+Implementation source `975fa80de0af2aee91da72376de2d528a6f510fc` was committed/pushed, with local and remote tips matching. After source freeze, all nine browser scenarios and expanded actual HTTP smoke passed again, including exact recovered-photo bytes, post-acknowledgment device cleanup and no missing routes. Final `assembleDebug` after final production sync passed in **47s**, 113 tasks. A first browser/HTTP rerun attempt omitted the bundled Playwright override and failed before checks; both reran successfully with the override. The existing 39 frontend/36 backend/four native authentication checks and lint 0 errors/22 warnings remain the latest actual results.
+
+A real APK remains in `frontend/android/app/build/outputs/apk/debug/app-debug.apk`, built from `975fa80`. Separate `ReliefMesh-demo.apk` copying, SHA-256 recording and independent signature/packaged-asset verification were not performed before the stop. Physical devices remain absent from adb, and the live frontend/provider loop remains blocked on a reachable configured backend or backend-only environment path. Final PR retry did not occur; prior connector 403/compare-view evidence remains unchanged. These tasks transfer to Developer 1.
+
+Stopped the owned normal frontend on 8001, fixture server on 5173 and preview on 4173 using their process sessions. Completed final tests/builds have exited. No further implementation or acceptance testing will run in this chat. The unrelated port-8000 service is preserved. Generated APK/cache/runtime data remain ignored and source is preserved; this documentation-only WIP checkpoint is saved/pushed before returning.
