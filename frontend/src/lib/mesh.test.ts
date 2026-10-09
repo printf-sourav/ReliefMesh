@@ -1,5 +1,5 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-import { Blob as NodeBlob } from 'node:buffer';
+import { Blob as NodeBlob, Buffer as NodeBuffer } from 'node:buffer';
 import { webcrypto } from 'node:crypto';
 import { deleteDB, openDB } from 'idb';
 import { preparePackage, parsePackage, forwardPackage } from './mesh-package';
@@ -21,6 +21,17 @@ it('rejects digest tampering and unknown immutable fields',async()=>{
   const pkg=await preparePackage(source,A);
   await expect(parsePackage(JSON.stringify({...pkg,image_base64:btoa('changed')}))).rejects.toThrow(/digest/);
   await expect(parsePackage(JSON.stringify({...pkg,secret:'never'}))).rejects.toThrow(/unsupported/);
+});
+it('imports a full-size 10 MiB photo without exhausting the JavaScript regex stack',async()=>{
+  const bytes=new Uint8Array(10*1024*1024);bytes[0]=137;bytes[bytes.length-1]=255;
+  const large={...source,image:new NodeBlob([bytes],{type:'image/png'}) as Blob};
+  const pkg=await preparePackage(large,A),parsed=await parsePackage(JSON.stringify(pkg));
+  expect(parsed.submission.image.size).toBe(bytes.length);
+  expect(NodeBuffer.from(await parsed.submission.image.arrayBuffer()).equals(NodeBuffer.from(bytes))).toBe(true);
+},30000);
+it('rejects noncanonical Base64 even when it decodes to the same photo bytes',async()=>{
+  const pkg=await preparePackage({...source,image:new NodeBlob([new Uint8Array([0])],{type:'image/png'}) as Blob},A);
+  await expect(parsePackage(JSON.stringify({...pkg,image_base64:'AB=='}))).rejects.toThrow(/encoding/);
 });
 it('imports atomically, deduplicates and retains conflicting UUIDs',async()=>{
   const pkg=await preparePackage(source,A);await importRelay(pkg,source);expect((await importRelay(pkg,source)).duplicate).toBe(true);

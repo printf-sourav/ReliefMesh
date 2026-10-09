@@ -20,8 +20,11 @@ export async function contentDigest(source:string, bytes:Uint8Array) {
 }
 function base64(bytes:Uint8Array) { let result='';for(let n=0;n<bytes.length;n+=8192) result+=String.fromCharCode(...bytes.subarray(n,n+8192));return btoa(result); }
 function bytesFrom64(text:string) {
-  if(text.length>14*1024*1024||!/^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(text)) throw new Error('Invalid photo encoding.');
-  const decoded=atob(text);return Uint8Array.from(decoded,x=>x.charCodeAt(0));
+  // Repeated capture groups can exhaust V8's regex stack on permitted large photos.
+  if(text.length>14*1024*1024||text.length%4!==0||!/^[A-Za-z0-9+/]*={0,2}$/.test(text)) throw new Error('Invalid photo encoding.');
+  const decoded=atob(text);
+  if(btoa(decoded)!==text) throw new Error('Invalid photo encoding.');
+  return Uint8Array.from(decoded,x=>x.charCodeAt(0));
 }
 export async function preparePackage(draft:Submission,deviceId:string):Promise<RelayPackage> {
   requireUuid(draft.client_report_id); requireUuid(deviceId);validateSubmission(draft);await validateImage(draft.image);
