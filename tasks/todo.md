@@ -6,9 +6,9 @@ This React/FastAPI/Android revision replaces the earlier Streamlit plan for the 
 
 Files: schemas, DB, incident service, backend requirements, gitignore. Dependencies: contract. Scope: medium.
 
-- [ ] Validated shared models and SQLite init/create/list/get with image storage work.
-- [ ] Atomic UUID replay/conflict handling preserves original output and initial edits together.
-- [ ] Verify restart, invalid inputs, same/changed payload retries and file cleanup on failure.
+- [x] Validated shared models and SQLite init/create/list/get with image storage work.
+- [x] Atomic UUID replay/conflict handling preserves original output and initial edits together.
+- [x] Verify restart, invalid inputs, same/changed payload retries and file cleanup on failure (7 persistence tests pass).
 
 ## B2 - FastAPI boundary (Developer 1)
 

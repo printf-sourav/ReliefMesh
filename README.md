@@ -1,8 +1,8 @@
 # ReliefMesh
 
-A planned 4.5-hour prototype for turning multilingual citizen reports with images into structured incidents for human responders.
+A local prototype for turning multilingual citizen reports with images into structured incidents for human responders.
 
-**Current status:** this repository contains the build brief and two Codex developer prompts. The application has not been implemented yet.
+**Current status:** the responsive React reporting/review/queue UI and Capacitor native source are implemented. The early FastAPI persistence/analysis checkpoint is integrated on `feature/frontend-demo`. Live Gemma, full backend review/matching/sync, and Android APK installation acceptance are still incomplete. See the exact results in [frontend handoff](docs/frontend-handoff.md), [backend handoff](docs/backend-handoff.md), [demo checks](docs/demo.md), and [Android build status](docs/android-build.md).
 
 ## Start two Codex chats
 
@@ -44,11 +44,12 @@ The supplied brief names **Gemma 4**. Developers must verify the event-required 
 
 ## Running the app
 
-Run instructions, exact dependencies, model configuration, and demo limitations will be added after implementation. Intended commands from the repository root:
+From the integrated feature checkout, create a separate Python environment and install the pinned backend requirements:
 
 ```powershell
-pip install -r requirements.txt
-uvicorn api.main:app --host 0.0.0.0 --port 8000
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m uvicorn api.main:app --host 0.0.0.0 --port 8000
 ```
 
 In a second terminal:
@@ -59,6 +60,26 @@ npm ci
 npm run dev
 ```
 
-These commands describe the planned application; the source does not exist yet. Developer 2 must also build, install-test, and deliver `ReliefMesh-demo.apk`, or report the exact build/device blocker. Responsive screenshots alone do not satisfy APK delivery. The phone connects to a reachable backend; the APK does not bundle Python/Gemma.
+On macOS/Linux use `.venv/bin/python`. Copy the root `.env.example` to ignored `.env` and configure the model/provider on the backend only; review [backend setup and availability](docs/backend-handoff.md). Never put tokens into `VITE_*`. Default analysis mode is live, and API health does not prove inference. Explicit backend fixture mode supports only the documented A-C sample reports.
+
+The browser dev server proxies `/api` to `127.0.0.1:8000`. A production preview or APK needs `VITE_API_BASE_URL` (an origin without `/api/v1`) at build time or a saved origin in Connection settings. On a physical phone use a reachable laptop LAN/HTTPS address; phone localhost is the phone. Bind the API to `0.0.0.0` and configure explicit CORS clients. Responder routes have no production authentication; use a trusted demo network.
+
+For UI development only, `VITE_ENABLE_MOCKS=true` enables labelled private fixtures in the dev server. It never activates on network failure and is disabled in production builds. Synthetic illustrations and preset output do not establish model inference.
+
+Frontend checks: `npm run typecheck`, `npm test`, `npm run build`. The reproducible browser runner is `npm run browser:check`; see [demo verification](docs/demo.md) for its two test servers and isolated Edge/Playwright setup.
+
+APK build commands:
+
+```powershell
+cd frontend
+npm run build
+npx cap sync android
+cd android
+.\gradlew.bat assembleDebug
+```
+
+Native source uses app ID `org.reliefmesh.app` and bundles `dist`; it does not point at a Vite server. Local HTTP/mixed content is permitted only in debug configuration. **No APK artifact exists yet:** this machine's Gradle build fails because `JAVA_HOME` and `java` are missing; Android SDK/adb were also not found. Compilation and device testing remain separate requirements. The APK bundles React, while Python/Gemma stays on the backend.
+
+Offline behavior: a reachable API with simulated transport offline stores a backend pending source; an unreachable API retains text/photo/UUID in device IndexedDB. Failed/unknown deliveries stay in the device queue until a matching acknowledgment. Deferred reports remain analysis-pending after delivery and require explicit saved-source analysis. No peer mesh, on-device model, guaranteed background sync or deployment is implemented.
 
 See [the condensed prototype brief](docs/prototype-brief.md) for the agreed demo journey. Event rules quoted in the original pasted text have not been independently verified.

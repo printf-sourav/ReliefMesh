@@ -61,7 +61,7 @@ async function run(name,work) { try { await work(); results.push({ name,status:'
     assert.equal(await page.getByRole('button',{name:'Connection settings'}).evaluate(element => element === document.activeElement),true);
   });
   await run('production unreachable API save survives reload; ack-only reconnect; one UUID',async () => {
-    const live = await context.newPage(); live.on('pageerror',error => errors.push(error.message));
+    const live = await context.newPage(); await live.setViewportSize({width:390,height:900}); live.on('pageerror',error => errors.push(error.message));
     const realBase = process.env.RELIEFMESH_PRODUCTION_URL || 'http://127.0.0.1:4173';
     await live.route('**/api/v1/**',route => route.abort('connectionrefused')); await live.goto(`${realBase}/#/report`);
     assert.equal(await live.getByText(/Development fixtures/).count(),0);

@@ -10,7 +10,8 @@
     "preview": "vite preview --host 0.0.0.0",
     "test": "vitest run",
     "android:sync": "cap sync android",
-    "browser:check": "node tests/browser-check.cjs"
+    "browser:check": "node tests/browser-check.cjs",
+    "test:http": "node tests/http-integration.cjs"
   },
   "dependencies": {
     "@capacitor/android": "7.4.3", "@capacitor/app": "7.0.1", "@capacitor/core": "7.4.3",
