@@ -5,13 +5,16 @@ import { nearby, nearbySupported, type NearbyEvent, type NearbyState } from './n
 import { forwardPackage, parsePackage, preparePackage, requireUuid } from './mesh-package';
 import { acknowledge, importRelay, listDelivered, listQueued, markRejected, updateQueued, type QueueItem } from './queue';
 import { message } from './utils';
-interface Peer {deviceId:string;outgoing:{id:string;digest:string}[];inventoryAt?:number;active?:{id:string;digest:string;deadline:number;attempts:number}}
+interface Peer {deviceId:string;outgoing:{id:string;digest:string}[];blocked:Set<string>;inventoryAt?:number;active?:{id:string;digest:string;deadline:number;attempts:number}}
 export interface SharingSnapshot {native:NearbyState|null;error:string;progress:string;peers:number;working:boolean}
 let snapshot:SharingSnapshot={native:null,error:'',progress:'',peers:0,working:false};
 const subscribers=new Set<()=>void>();const peers=new Map<string,Peer>();let foreground=true;let active:Promise<void>|undefined;let rerun=false;
 function publish(patch:Partial<SharingSnapshot>) {snapshot={...snapshot,...patch,peers:peers.size};subscribers.forEach(fn=>fn());}
 export const sharing={subscribe:(fn:()=>void)=>{subscribers.add(fn);return()=>{subscribers.delete(fn);};},getSnapshot:()=>snapshot};
 const entry=(item:QueueItem)=>({id:item.client_report_id,digest:item.relay!.content_sha256});
+const pairKey=(pair:{id:string;digest:string})=>`${pair.id}:${pair.digest}`;
+const configuredOrigin=()=>validateOrigin(getOrigin());
+const currentReceipt=(item:QueueItem)=>!!item.relay_receipt&&item.relay_receipt_origin!==undefined&&item.relay_receipt_origin===configuredOrigin();
 function validatePairs(value:unknown):{id:string;digest:string}[] {
   if(!Array.isArray(value)||value.length>20) throw new Error('Invalid nearby inventory batch.');
   return value.map(item=>{requireUuid(item.id);if(typeof item.digest!=='string'||!/^[a-f0-9]{64}$/.test(item.digest)) throw new Error('Invalid inventory digest.');return {id:item.id,digest:item.digest};});
@@ -32,14 +35,15 @@ async function control(endpointId:string,value:unknown) {
       if(digest&&digest!==pair.digest) {publish({error:`Conflicting nearby source ${pair.id.slice(0,8)}; original retained.`});continue;}
       if(!digest) unknown.push(pair);
       else {
-        await nearby.sendControl({endpointId,control:{type:'peer_stored',...pair}});
-        if(delivered?.receipt?.sync_status==='synced') await nearby.sendControl({endpointId,control:{type:'hub_receipt',...pair,origin:getOrigin(),receipt:delivered.receipt}});
+        if(local||delivered?.receipt_origin===configuredOrigin()) await nearby.sendControl({endpointId,control:{type:'peer_stored',...pair}});
+        else unknown.push(pair); // A different or unknown destination still needs this source.
+        if(delivered?.receipt?.sync_status==='synced'&&delivered.receipt_origin!==undefined) await nearby.sendControl({endpointId,control:{type:'hub_receipt',...pair,origin:delivered.receipt_origin,receipt:delivered.receipt}});
       }
     }
     if(unknown.length) await nearby.sendControl({endpointId,control:{type:'request',items:unknown}});
   } else if(data.type==='request') {
     const peer=peers.get(endpointId)!;
-    for(const pair of validatePairs(data.items)) if(!peer.outgoing.some(x=>x.id===pair.id)&&peer.active?.id!==pair.id&&peer.outgoing.length<100) peer.outgoing.push(pair);
+    for(const pair of validatePairs(data.items)) if(!peer.blocked.has(pairKey(pair))&&!peer.outgoing.some(x=>x.id===pair.id)&&peer.active?.id!==pair.id&&peer.outgoing.length<100) peer.outgoing.push(pair);
   } else if(data.type==='peer_stored'||data.type==='hub_receipt') {
     requireUuid(data.id);const item=(await listQueued()).find(x=>x.client_report_id===data.id);
     if(!item?.relay||item.relay.content_sha256!==data.digest) return;
@@ -47,7 +51,8 @@ async function control(endpointId:string,value:unknown) {
       const receipt=data.receipt; requireUuid(receipt?.report_id);
       if(!receipt||receipt.client_report_id!==item.client_report_id||receipt.sync_status!=='synced'||!Number.isFinite(Date.parse(receipt.accepted_at))||typeof data.origin!=='string') throw new Error('Invalid relay receipt.');
       // A trusted group's hint never changes this device's configured upload origin.
-      validateOrigin(data.origin);await updateQueued(item.client_report_id,{relay_receipt:receipt,peer_stored:true});
+      const origin=validateOrigin(data.origin);if(origin!==configuredOrigin())return;
+      await updateQueued(item.client_report_id,{relay_receipt:receipt,relay_receipt_origin:origin,peer_stored:true});
     } else if(!item.peer_stored) await updateQueued(item.client_report_id,{peer_stored:true});
     const peer=peers.get(endpointId)!;if(peer.active?.id===data.id&&peer.active.digest===data.digest) peer.active=undefined;
   }
@@ -68,10 +73,10 @@ async function importInbox() {
 async function sendPending(endpointId:string,peer:Peer) {
   if(peer.active&&Date.now()<peer.active.deadline) return;
   let next=peer.active;
-  if(next&&next.attempts>=4) {peer.active=undefined;publish({error:'Nearby transfer retries paused. Reconnect the phones to try again.'});return;}
+  if(next&&next.attempts>=4) {peer.blocked.add(pairKey(next));peer.active=undefined;publish({error:'Nearby transfer retries paused. Reconnect the phones to try again.'});return;}
   if(!next) {const pair=peer.outgoing.shift();if(!pair)return;next={...pair,attempts:0,deadline:0};}
   const item=(await listQueued()).find(x=>x.client_report_id===next.id);
-  if(!item?.relay||item.relay.content_sha256!==next.digest||item.rejected||item.superseded_by||item.relay_receipt) {peer.active=undefined;return;}
+  if(!item?.relay||item.relay.content_sha256!==next.digest||item.rejected||item.superseded_by||currentReceipt(item)) {peer.active=undefined;return;}
   if(item.relay.hop_count>=3||item.relay.visited_device_ids.includes(peer.deviceId)) {peer.active=undefined;return;}
   peer.active={...next,attempts:next.attempts+1,deadline:Date.now()+120000+Math.min(30000,1000*2**next.attempts)};
   try {await nearby.sendReport({endpointId,packageJson:JSON.stringify(forwardPackage(item.relay,peer.deviceId))});}
@@ -84,13 +89,19 @@ export function gatewayUpload(item:QueueItem) {
 }
 async function uploadSource(item:QueueItem) {
   // POST reconciles the immutable payload. UUID receipt alone never authorizes deletion.
+  const origin=configuredOrigin();
+  const sameDestination=()=>{if(configuredOrigin()!==origin)throw new Error('Backend destination changed during delivery; source retained for retry.');};
+  sameDestination();
   const record=await api.create(item,true);
+  sameDestination();
   if(record.client_report_id!==item.client_report_id||!record.id) throw new Error('API acknowledgment did not match this source.');
-  if(record.sync_status==='pending') await api.sync(true);
+  if(record.sync_status==='pending') {sameDestination();await api.sync(true);sameDestination();}
+  sameDestination();
   const receipt=await api.receipt(item.client_report_id);
+  sameDestination();
   if(receipt.client_report_id!==item.client_report_id||receipt.report_id!==record.id||receipt.sync_status!=='synced') throw new Error('Server accepted this source but hub delivery remains pending.');
-  await acknowledge(item.client_report_id,record,receipt);
-  if(item.relay) for(const endpointId of peers.keys()) await nearby.sendControl({endpointId,control:{type:'hub_receipt',id:item.client_report_id,digest:item.relay.content_sha256,origin:getOrigin(),receipt}}).catch(()=>{});
+  await acknowledge(item.client_report_id,record,receipt,origin);
+  if(item.relay) for(const endpointId of peers.keys()) await nearby.sendControl({endpointId,control:{type:'hub_receipt',id:item.client_report_id,digest:item.relay.content_sha256,origin,receipt}}).catch(()=>{});
 }
 export function wakeSharing() {
   if(!nearbySupported()||!foreground||!snapshot.native?.enabled) return Promise.resolve();
@@ -99,9 +110,12 @@ export function wakeSharing() {
     publish({working:true});
     do {
       rerun=false;
-      for(const item of await listQueued()) if(!item.relay&&!item.rejected&&!item.superseded_by) {
-        try {await updateQueued(item.client_report_id,{relay:await preparePackage(item,snapshot.native!.deviceId),relay_origin:true});}
-        catch(error){publish({error:`Source kept locally; cannot share: ${message(error)}`});}
+      for(const item of await listQueued()) {
+        if(item.relay_receipt&&!currentReceipt(item)) await updateQueued(item.client_report_id,{relay_receipt:undefined,relay_receipt_origin:undefined});
+        if(!item.relay&&!item.rejected&&!item.superseded_by) {
+          try {await updateQueued(item.client_report_id,{relay:await preparePackage(item,snapshot.native!.deviceId),relay_origin:true});}
+          catch(error){publish({error:`Source kept locally; cannot share: ${message(error)}`});}
+        }
       }
       await importInbox();
       for(const [endpointId,peer] of peers) await sendPending(endpointId,peer);
@@ -125,7 +139,7 @@ export function wakeSharing() {
 }
 async function event(data:NearbyEvent) {
   try {
-    if(data.type==='peer'&&data.endpointId&&data.deviceId) {requireUuid(data.deviceId);peers.set(data.endpointId,{deviceId:data.deviceId,outgoing:[]});}
+    if(data.type==='peer'&&data.endpointId&&data.deviceId) {requireUuid(data.deviceId);if(!peers.has(data.endpointId))peers.set(data.endpointId,{deviceId:data.deviceId,outgoing:[],blocked:new Set()});}
     if(data.type==='disconnected'&&data.endpointId) peers.delete(data.endpointId);
     if(data.type==='state') {const state=await nearby.getState();publish({native:state});if(!state.running) peers.clear();}
     if(data.type==='control'&&data.endpointId) await control(data.endpointId,data.control);

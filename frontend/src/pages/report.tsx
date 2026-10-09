@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useConnection } from '../App';
 import { Button } from '../components/ui/button';
 import { AnalysisEditor, cleanAnalysis } from '../components/analysis-editor';
-import { api, ApiError } from '../lib/api';
+import { api, ApiError, getOrigin, validateOrigin } from '../lib/api';
 import type { AnalysisResult, Draft, IncidentAnalysis } from '../lib/api-types';
 import { createReportId, validateDraft, validateImage } from '../lib/draft';
 import { acknowledge, markRejected, saveQueued } from '../lib/queue';
@@ -62,7 +62,8 @@ export default function ReportPage() {
       try { await saveQueued(submission); } catch { throw new Error('Device storage could not save this report. Storage may be full or unavailable. Keep this screen open and free space before retrying.'); }
       setSaved(true); changed();
       try {
-        const record = await api.create(submission, online); await acknowledge(submission.client_report_id,record);
+        const origin=validateOrigin(getOrigin());
+        const record = await api.create(submission, online); await acknowledge(submission.client_report_id,record,undefined,origin);
         setSuccess(record.sync_status === 'synced' ? 'Delivered to the simulated hub. Human review is pending.' : 'Saved on the backend; waiting for simulated transport sync.');
       } catch (error) { if (error instanceof ApiError) await markRejected(submission.client_report_id,error); setSuccess('Saved on this device; delivery is unconfirmed. Retry or recover a rejected source from Queue.'); setError(message(error)); }
       changed();
