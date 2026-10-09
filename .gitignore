@@ -17,6 +17,7 @@ frontend/dist/
 **/build/
 **/local.properties
 *.apk
+artifacts/
 *.aab
 *.jks
 *.keystore
