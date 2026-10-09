@@ -1,5 +1,7 @@
 # Developer 1 continuation — verified APK and live UI
 
+**Latest UI refresh:** source **9d4befc** separates responder web and citizen Android screens. The installed APK SHA-256 is **5853ae621944a30e3281c9a5510856005a850feae1cb07845e5f97d125ef49c7**. See [current UI/hosting delivery](frontend-handoff.md#final-uiapk-delivery-and-hosting-preparation), [APK manifest](frontend-review-evidence/apk-verification.json) and [phone UI evidence](frontend-review-evidence/android-ui-split.json). The prior milestones below are historical. Second-phone testing was explicitly deferred; Render configuration is pushed but not deployed.
+
 The continued implementation is committed/pushed on `feature/frontend-demo`. Frozen executable source: [`ac39a8b696137ac84aed17413a22e10c53bbe68b`](https://github.com/printf-sourav/ReliefMesh/commit/ac39a8b696137ac84aed17413a22e10c53bbe68b). Later documentation/evidence commits do not change this APK's source. Main has not been merged, and no release or deployment was performed.
 
 ## Delivered APK

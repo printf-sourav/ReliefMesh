@@ -2,6 +2,8 @@
 
 Developer 2 owns an installable **ReliefMesh-demo.apk**, using the same React frontend via Capacitor. This is a demo debug build signed with the standard debug key, not a Play Store release. No iOS or separate React Native application is requested.
 
+Current UI: Android has Report/My reports with plain wording and nearby team sharing; all responder dashboard tools are on the web. Follow [the current UI contract](web-mobile-ui-split.md). The [latest APK manifest](frontend-review-evidence/apk-verification.json) and [phone evidence](frontend-review-evidence/android-ui-split.json) supersede earlier artifact milestones.
+
 ## Required implementation
 
 - `frontend/capacitor.config.ts`: app name ReliefMesh, app ID `org.reliefmesh.app`, `webDir: "dist"`.

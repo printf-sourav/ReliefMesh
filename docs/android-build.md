@@ -1,6 +1,6 @@
 # Android build and artifact
 
-The debug APK now builds. Earlier missing-Java/SDK results in the chronological frontend handoff are superseded. Android compilation is separate from installation and physical two-phone acceptance, which remain unverified.
+The debug APK builds and is installed on one Android 16 phone. The latest source/checksum is in [the verification manifest](frontend-review-evidence/apk-verification.json); [phone UI evidence](frontend-review-evidence/android-ui-split.json) verifies the citizen-only experience. Earlier toolchain and artifact milestones below are historical. Two-phone acceptance remains unverified and was deferred by the user.
 
 ## Toolchain and reproduction
 

@@ -1,0 +1,20 @@
+{
+  "source_commit": "9d4befc61d658cdfe126fb57fd356cfa607eccb5",
+  "installed": true,
+  "android_citizen_routes": true,
+  "no_responder_dashboard": true,
+  "no_server_queue_or_simulation_controls": true,
+  "team_connection_dialog": true,
+  "dimensions": {
+    "width": 433,
+    "contentWidth": 433
+  },
+  "native": {
+    "configured": true,
+    "enabled": true,
+    "running": true
+  },
+  "pageErrors": [],
+  "two_phone_transfer_tested": false,
+  "two_phone_test_deferred_by_user": true
+}

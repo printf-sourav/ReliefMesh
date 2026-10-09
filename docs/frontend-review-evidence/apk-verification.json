@@ -1,8 +1,8 @@
 {
-  "source_commit": "ac39a8b696137ac84aed17413a22e10c53bbe68b",
+  "source_commit": "9d4befc61d658cdfe126fb57fd356cfa607eccb5",
   "apk": "artifacts/ReliefMesh-demo.apk",
-  "sha256": "8487c7a327982128f13bfea4c5093d6e1185835923c9b5199e9edec5fd8283c9",
-  "bytes": 5345987,
+  "sha256": "5853ae621944a30e3281c9a5510856005a850feae1cb07845e5f97d125ef49c7",
+  "bytes": 5345070,
   "application_id": "org.reliefmesh.app",
   "version_code": "1",
   "version_name": "1.0",
@@ -67,12 +67,12 @@
   ],
   "production_assets": [
     {
-      "path": "assets/index-Besw3qD6.css",
-      "sha256": "311eb4e7ae8594d19d451aff755cf80c121a02abfc7c5b9a16d4aab580a191df"
+      "path": "assets/index-CX--yjVa.js",
+      "sha256": "0355adef9f60906c72d5a8a48e06d0e2683538db560dcb9be79d94f5226c8b60"
     },
     {
-      "path": "assets/index-rhBJjym9.js",
-      "sha256": "83bdaaa791d9b83d175ff57373d63f1b4705498a74e840f6ab4cc37ac415cbc7"
+      "path": "assets/index-D_1Hm00R.css",
+      "sha256": "71993648145b12bba87eb5a5e6c54c77f1afa68a5d966ef0056d4f45ffa53624"
     },
     {
       "path": "assets/manrope-cyrillic-400-normal-BMzJvInZ.woff2",
@@ -235,8 +235,8 @@
       "sha256": "19bc9ab84376bb2f88eb858d4293c75dad965c70df7755d0a7f03d10080174b2"
     },
     {
-      "path": "assets/web-BCyEjJap.js",
-      "sha256": "02c510421986ec8a45dff3c501ec1d772d7088e87dcc4372a9f3efdcb9ca10fc"
+      "path": "assets/web-Bhsuj3-g.js",
+      "sha256": "ea86257df11b6f0dcc7d5bf0403d59e2da1991bffbfb28e4ca33975940b939f1"
     },
     {
       "path": "demo-flood.svg",
@@ -252,11 +252,12 @@
     },
     {
       "path": "index.html",
-      "sha256": "a5ff9972b7d9702c56731a023e225b2db60c543ce71dab086c8910ad87e54ee2"
+      "sha256": "53331447000c4180443242f5d781b36bd2756e713b711ffae8c41a216462cd56"
     }
   ],
   "nearby_plugin_present": true,
   "development_server_url": null,
   "physical_installation_tested": true,
-  "physical_evidence": "docs/frontend-review-evidence/device-results.json"
+  "physical_evidence": "docs/frontend-review-evidence/android-ui-split.json",
+  "installed_sha256": "5853ae621944a30e3281c9a5510856005a850feae1cb07845e5f97d125ef49c7"
 }

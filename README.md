@@ -4,7 +4,7 @@ Frontend inference requests allow 120 seconds by default, aligned with the backe
 
 A local prototype for turning multilingual citizen reports with images into structured incidents for human responders.
 
-**Current status:** the responsive reporting/review/queue UI, reviewed source-consistency fixes, full FastAPI routes and native authenticated Nearby relay are integrated on `feature/frontend-demo`. Frontend, actual HTTP/SQLite/fixture-analysis and Android compilation/unit checks pass; a debug APK has built. Physical two-phone acceptance and a frontend live-provider loop remain incomplete. See [frontend handoff](docs/frontend-handoff.md), [backend handoff](docs/backend-handoff.md), [demo checks](docs/demo.md), and [Android build and artifact](docs/android-build.md) for actual evidence.
+**Current status:** the browser contains only the responder dashboard; the Android APK contains simple Report/My reports screens. Full FastAPI routes, human review and native foreground Nearby relay are integrated on `feature/frontend-demo`. The APK is built, verified and installed on one Android 16 phone. Frontend/API/browser/native checks pass, and an earlier real Hugging Face frontend loop is verified. Two-phone acceptance remains untested; the user deferred it. [UI split](docs/web-mobile-ui-split.md), [Render hosting steps](docs/host-demo-render.md), and [frontend handoff](docs/frontend-handoff.md) record the current behavior and limitations. Hosting configuration is pushed; the Render service is not deployed yet.
 
 ## Start two Codex chats
 
@@ -29,7 +29,7 @@ Developer 1 uses `feature/backend-ai`; Developer 2 uses `feature/frontend-demo`.
 | Server persistence | SQLite + local image files |
 | Device offline storage | IndexedDB with the `idb` helper, including image blobs |
 
-Use one shared frontend with purpose-built desktop and phone layouts. Follow the [visual design brief](docs/ui-design.md) and [Android delivery specification](docs/mobile-apk.md). No Streamlit frontend or separate React Native app is required.
+Use one shared frontend with separate responder-web and citizen-phone routes. Follow the [current UI contract](docs/web-mobile-ui-split.md) and [Android delivery specification](docs/mobile-apk.md). No Streamlit frontend or separate React Native app is required.
 
 ## Prototype scope
 
@@ -42,7 +42,7 @@ Use one shared frontend with purpose-built desktop and phone layouts. Follow the
 
 Voice, resource matching, actual device mesh networking, and deployment are outside the initial build.
 
-The user subsequently authorized automatic Android nearby relay through Google Nearby Connections. Its foreground implementation, one-time group setup and separate storage/delivery states follow [the relay extension](docs/nearby-relay.md). Browser builds explain that real nearby transfer requires Android; physical radio behavior remains unverified.
+The user subsequently authorized automatic Android nearby relay through Google Nearby Connections. Its foreground implementation, one-time group setup and separate storage/delivery states follow [the relay extension](docs/nearby-relay.md). One-phone discovery and pause/resume are verified; actual peer transfer remains unverified. The user also requested demo hosting, for which [Render configuration and instructions](docs/host-demo-render.md) are now provided.
 
 The supplied brief names **Gemma 4**. Developers must verify the event-required model and available multimodal runtime before choosing an implementation; no unverified model identifier is prescribed here. Fixture analysis can support UI development but cannot prove the live AI requirement.
 
@@ -72,7 +72,7 @@ This checkout's final check found an unrelated GroundOne API already on port 800
 
 For UI development only, `VITE_ENABLE_MOCKS=true` enables labelled private fixtures in the dev server. It never activates on network failure and is disabled in production builds. Synthetic illustrations and preset output do not establish model inference.
 
-Frontend checks: `npm run typecheck`, `npm test`, `npm run build`. The reproducible browser runner is `npm run browser:check`; see [demo verification](docs/demo.md) for its two test servers and isolated Edge/Playwright setup.
+Frontend checks: `npm run typecheck`, `npm test`, `npm run build`. The browser runner is `npm run browser:check`; [the UI contract](docs/web-mobile-ui-split.md) describes its separate responder/citizen fixture and production preview servers and [demo verification](docs/demo.md) describes isolated Edge/Playwright setup.
 
 APK build commands:
 
@@ -84,9 +84,9 @@ cd android
 .\gradlew.bat assembleDebug
 ```
 
-Native source uses app ID `org.reliefmesh.app`, SDK 35 and JDK 21, with bundled production `dist`. Local HTTP/mixed content is permitted only in debug configuration. Android build/unit checks now pass with a workspace-local ignored toolchain; earlier missing-Java/SDK results are superseded. Artifact checksum/source and installation instructions are recorded in [Android build status](docs/android-build.md). No connected adb device was found. The APK bundles React, while Python/Gemma stays on the backend.
+Native source uses app ID `org.reliefmesh.app`, SDK 35 and JDK 21, with bundled production `dist`. Local HTTP/mixed content is permitted only in debug configuration. Android build/unit checks pass with a workspace-local ignored toolchain. The latest APK checksum/source is in [the verification manifest](docs/frontend-review-evidence/apk-verification.json); [phone UI evidence](docs/frontend-review-evidence/android-ui-split.json) records its installation and citizen-only routes. The APK bundles React, while Python/Gemma stays on the backend.
 
-Offline behavior: a reachable API with simulated transport offline stores a backend pending source; an unreachable API retains text/photo/UUID in device IndexedDB. Failed/unknown deliveries stay in the device queue until a matching acknowledgment. Deferred reports require explicit saved-source analysis after delivery. In Android, enable Nearby Sharing in Queue after joining the same group on both phones. Authenticated transfers and API gateway retries operate in the foreground; peer storage or a relay delivery hint retains the origin's copy until its own same-payload API confirmation. On-device inference and guaranteed background delivery are outside this implementation.
+Offline behavior: an unreachable API retains text/photo/UUID in device IndexedDB. Failed/unknown deliveries stay on the phone until a matching acknowledgment. Deferred reports require explicit saved-source analysis after delivery. In Android, open My reports → Share nearby and use the same team name/code on both phones. Authenticated transfers and gateway retries operate with sharing enabled in the foreground; peer storage or a relay delivery hint retains the original until its own same-payload API confirmation. Without sharing enabled, use Try sending now after reconnecting. Pending server reports can be brought into the web dashboard by responders. On-device inference and guaranteed background delivery are outside this implementation.
 
 See [the condensed prototype brief](docs/prototype-brief.md) for the agreed demo journey. Event rules quoted in the original pasted text have not been independently verified.
 
