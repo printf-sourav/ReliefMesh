@@ -17,22 +17,22 @@ beforeEach(() => {
   vi.mocked(saveQueued).mockReset().mockResolvedValue(undefined);
   vi.stubGlobal('URL', class extends URL { static createObjectURL() {return 'blob:test';} static revokeObjectURL() {} });
   render(<MemoryRouter><ReportPage/></MemoryRouter>);
-  fireEvent.change(screen.getByLabelText(/Describe the incident/),{target:{value:'Water entering house'}});
-  fireEvent.change(screen.getByLabelText(/^Location/),{target:{value:'River'}});
+  fireEvent.change(screen.getByLabelText(/What happened?/),{target:{value:'Water entering house'}});
+  fireEvent.change(screen.getByLabelText(/Where is it?/),{target:{value:'River'}});
 });
 async function select(name:string) { await act(async()=>{fireEvent.change(screen.getByLabelText('Incident photo'),{target:{files:[photo(name)]}});}); }
 it('blocks Analyze and Save during delayed replacement decoding', async () => {
   await select('old.png'); const decode = deferred<void>(); vi.mocked(validateImage).mockReturnValueOnce(decode.promise);
   await select('new.png');
-  expect(screen.getByRole('button',{name:'Analyze report'})).toBeDisabled();
-  const save=screen.getByRole('button',{name:/Save report/}); expect(save).toBeDisabled(); fireEvent.click(save); expect(saveQueued).not.toHaveBeenCalled();
+  expect(screen.getByRole('button',{name:'Help describe this'})).toBeDisabled();
+  const save=screen.getByRole('button',{name:/Send report/}); expect(save).toBeDisabled(); fireEvent.click(save); expect(saveQueued).not.toHaveBeenCalled();
   await act(async()=>decode.resolve());
 });
 it('discards late inference from an earlier photo snapshot', async () => {
   await select('old.png'); const inference=deferred<AnalysisResult>(); vi.spyOn(api,'analyze').mockReturnValueOnce(inference.promise);
-  fireEvent.click(screen.getByRole('button',{name:'Analyze report'}));
+  fireEvent.click(screen.getByRole('button',{name:'Help describe this'}));
   await select('new.png'); await act(async()=>inference.resolve(result));
-  expect(screen.queryByText('AI suggested · live analysis')).not.toBeInTheDocument();
+  expect(screen.queryByText('Suggested description · please check')).not.toBeInTheDocument();
   expect(screen.getByText('new.png')).toBeInTheDocument();
 });
 it('keeps the newest photo when replacements finish in reverse order', async () => {

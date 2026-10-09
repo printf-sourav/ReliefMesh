@@ -14,6 +14,7 @@ async function run(name,work) { try { await work(); results.push({ name,status:'
   const page = await context.newPage(); page.on('pageerror',error => errors.push(error.message));
   page.on('console',entry => { if(entry.type() === 'error') consoleErrors.push(entry.text()); });
   const base = process.env.RELIEFMESH_FIXTURE_URL || 'http://127.0.0.1:5173';
+  const citizenBase = process.env.RELIEFMESH_CITIZEN_FIXTURE_URL || 'http://127.0.0.1:5174';
   await page.goto(`${base}/demo-flood.svg`); await page.screenshot({path:join(output,'synthetic-photo.png')});
   await run('fixture dashboard, selection and search',async () => {
     await page.goto(`${base}/#/dashboard`); await page.getByRole('button',{name:/City School.*2? source/}).first().waitFor();
@@ -41,24 +42,30 @@ async function run(name,work) { try { await work(); results.push({ name,status:'
   for (const width of [320,390,768,1440]) await run(`layouts at ${width}px`,async () => {
     await page.setViewportSize({width,height:1000});
     for (const route of ['dashboard','report','queue']) {
-      await page.goto(`${base}/#/${route}`); await page.locator('h1').waitFor();
+      await page.goto(`${route === 'dashboard' ? base : citizenBase}/#/${route}`); await page.locator('h1').waitFor();
       const dimensions = await page.evaluate(() => ({ content:document.documentElement.scrollWidth,viewport:innerWidth }));
       assert.ok(dimensions.content <= dimensions.viewport,`${route}: ${JSON.stringify(dimensions)}`);
       if(width < 768) {
         for(const button of await page.locator('button:visible').all()) { const box = await button.boundingBox(); assert.ok(box.height >= 44,`Touch target below 44px on ${route}`); }
-        await page.getByRole('link',{name:'Queue',exact:true}).tap(); await page.getByRole('link',{name:route === 'dashboard' ? 'Dashboard' : route === 'report' ? 'Report' : 'Queue',exact:true}).tap();
+        if(route !== 'dashboard') {await page.getByRole('link',{name:'My reports',exact:true}).tap(); await page.getByRole('link',{name:route === 'report' ? 'Report' : 'My reports',exact:true}).tap();}
       }
       if (width === 390 || width === 1440) await page.screenshot({path:join(output,`${width}-${route}.png`),fullPage:true});
     }
     if (width < 768) { await page.goto(`${base}/#/dashboard`); await page.getByRole('button',{name:/Riverside Colony/}).first().click(); await page.getByText('ORIGINAL CITIZEN REPORT',{exact:true}).waitFor(); await page.screenshot({path:join(output,`${width}-detail.png`),fullPage:true}); await page.getByRole('button',{name:'Back to incidents'}).click(); }
   });
   await run('fixture form with separate original and citizen edits',async () => {
-    await page.setViewportSize({width:390,height:900}); await page.goto(`${base}/#/report`);
-    await page.getByLabel(/Describe the incident/).fill('Hamare ghar mein paani aa gaya hai. Chaar log hain. Ek elderly person hai aur drinking water chahiye.');
-    await page.getByLabel(/^Location/).fill('Riverside Colony'); await page.getByLabel('Incident photo',{exact:true}).setInputFiles(join(output,'synthetic-photo.png'));
-    await page.getByRole('button',{name:'Analyze report',exact:true}).click(); await page.getByLabel('Summary').waitFor();
+    await page.setViewportSize({width:390,height:900}); await page.goto(`${citizenBase}/#/report`);
+    await page.getByLabel(/What happened?/).fill('Hamare ghar mein paani aa gaya hai. Chaar log hain. Ek elderly person hai aur drinking water chahiye.');
+    await page.getByLabel(/Where is it?/).fill('Riverside Colony'); await page.getByLabel('Incident photo',{exact:true}).setInputFiles(join(output,'synthetic-photo.png'));
+    await page.getByRole('button',{name:'Help describe this',exact:true}).click(); await page.getByLabel('Summary').waitFor();
     await page.getByLabel('Summary').fill('Citizen correction retained separately.'); await page.screenshot({path:join(output,'390-analysis.png'),fullPage:true});
-    await page.getByRole('button',{name:'Save reviewed report'}).click(); await page.getByRole('status').filter({hasText:'Delivered to the simulated hub'}).waitFor();
+    await page.getByRole('button',{name:'Send report'}).click(); await page.getByRole('status').filter({hasText:'Sent to the response team'}).waitFor();
+  });
+  await run('website and citizen preview keep their routes separate',async () => {
+    await page.goto(`${base}/#/report`); await page.getByRole('heading',{name:'Every report. A clearer response.'}).waitFor();
+    assert.equal(await page.getByRole('link',{name:'Report',exact:true}).count(),0);
+    await page.goto(`${citizenBase}/#/dashboard`); await page.getByRole('heading',{name:'Tell us what’s happening.'}).waitFor();
+    assert.equal(await page.getByRole('link',{name:'Dashboard',exact:true}).count(),0);
   });
   await run('dialog focus trap and return',async () => {
     await page.getByRole('button',{name:'Connection settings'}).click(); await page.getByRole('dialog').waitFor();
@@ -68,12 +75,12 @@ async function run(name,work) { try { await work(); results.push({ name,status:'
   });
   await run('production unreachable API save survives reload; ack-only reconnect; one UUID',async () => {
     const live = await context.newPage(); await live.setViewportSize({width:390,height:900}); live.on('pageerror',error => errors.push(error.message));
-    const realBase = process.env.RELIEFMESH_PRODUCTION_URL || 'http://127.0.0.1:4173';
+    const realBase = process.env.RELIEFMESH_CITIZEN_PRODUCTION_URL || 'http://127.0.0.1:4174';
     await live.route('**/api/v1/**',route => route.abort('connectionrefused')); await live.goto(`${realBase}/#/report`);
     assert.equal(await live.getByText(/Development fixtures/).count(),0);
-    await live.getByLabel(/Describe the incident/).fill('Floodwater entering home. Four reported people need water.'); await live.getByLabel(/^Location/).fill('Offline test location');
+    await live.getByLabel(/What happened?/).fill('Floodwater entering home. Four reported people need water.'); await live.getByLabel(/Where is it?/).fill('Offline test location');
     await live.getByLabel('Incident photo',{exact:true}).setInputFiles(join(output,'synthetic-photo.png'));
-    await live.getByRole('button',{name:/Save report · analysis pending/}).click(); await live.getByRole('status').filter({hasText:'Saved on this device; delivery is unconfirmed'}).waitFor();
+    await live.getByRole('button',{name:/Send report/}).click(); await live.getByRole('status').filter({hasText:'Saved on this phone.'}).waitFor();
     await live.reload(); await live.goto(`${realBase}/#/queue`); await live.getByText('Offline test location',{exact:true}).waitFor(); assert.equal(await live.locator('.queue-item img').evaluate(image => image.naturalWidth > 0),true);
     await live.screenshot({path:join(output,'390-offline-queue.png'),fullPage:true});
     const uuids = []; let record = null; await live.unroute('**/api/v1/**');
@@ -87,8 +94,8 @@ async function run(name,work) { try { await work(); results.push({ name,status:'
       if (path === '/api/v1/sync') return route.fulfill({json:{synced_report_ids:[],pending_count:0}});
       return route.fulfill({json:{items:[],total:0,offset:0,limit:100}});
     });
-    await live.getByRole('button',{name:'Retry device uploads & sync'}).click(); await live.getByRole('status').filter({hasText:'1 device reports acknowledged'}).waitFor(); assert.equal(await live.locator('.queue-item').count(),0);
-    await live.getByRole('button',{name:'Retry device uploads & sync'}).click(); await live.getByRole('status').filter({hasText:'0 device reports acknowledged'}).waitFor(); assert.equal(uuids.length,1);
+    await live.getByRole('button',{name:'Try sending now'}).click(); await live.getByRole('status').filter({hasText:'1 report sent'}).waitFor(); assert.equal(await live.locator('.queue-item').count(),0);
+    assert.equal(await live.getByRole('button',{name:'Try sending now'}).isDisabled(),true); await live.reload(); assert.equal(await live.locator('.queue-item').count(),0); assert.equal(uuids.length,1);
     await live.close();
   });
   assert.equal(errors.length,0,JSON.stringify(errors)); assert.equal(consoleErrors.length,0,JSON.stringify(consoleErrors));

@@ -21,8 +21,8 @@ beforeEach(() => {
 it('must not attach old-photo analysis to a replacement that finishes decoding during inference',async () => {
   render(<MemoryRouter><ReportPage/></MemoryRouter>);
   const user=userEvent.setup();
-  await user.type(screen.getByLabelText(/Describe the incident/),'Flood at school');
-  await user.type(screen.getByLabelText(/^Location/),'School');
+  await user.type(screen.getByLabelText(/What happened?/),'Flood at school');
+  await user.type(screen.getByLabelText(/Where is it?/),'School');
   await user.upload(screen.getByLabelText('Incident photo'),new File(['old'],'old.png',{type:'image/png'}));
   await screen.findByText('old.png');
   let finishValidation!: () => void;
@@ -31,11 +31,11 @@ it('must not attach old-photo analysis to a replacement that finishes decoding d
   let finishInference!: (value:AnalysisResult) => void;
   vi.spyOn(api,'analyze').mockImplementation(() => new Promise(resolve => { finishInference=resolve; }));
   vi.spyOn(api,'create').mockImplementation(async submission => ({id:'server',client_report_id:submission.client_report_id,sync_status:'synced'} as IncidentRecord));
-  await user.click(screen.getByRole('button',{name:'Analyze report'}));
+  await user.click(screen.getByRole('button',{name:'Help describe this'}));
   await act(async () => { finishValidation(); });
   await screen.findByText('new.png');
   if (finishInference) await act(async () => { finishInference(result); });
-  await user.click(screen.getByRole('button',{name:/^Save (reviewed report|report · analysis pending)/}));
+  await user.click(screen.getByRole('button',{name:/^Send report/}));
   await waitFor(() => expect(saveQueued).toHaveBeenCalled());
   const saved=vi.mocked(saveQueued).mock.calls[0][0];
   expect(saved.image_name).toBe('new.png');
