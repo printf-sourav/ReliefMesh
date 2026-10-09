@@ -32,3 +32,4 @@ export interface DashboardMetrics { active_clusters: number; possible_duplicate_
 export interface DashboardSnapshot extends DashboardMetrics { matching_available: boolean | null; matching_warning: string | null }
 export interface SyncResult { synced_report_ids: string[]; pending_count: number }
 export interface Health { status: string; ai_mode: string; model_id: string | null }
+export interface DeliveryReceipt {client_report_id:string;report_id:string;accepted_at:string;sync_status:'pending'|'synced'}

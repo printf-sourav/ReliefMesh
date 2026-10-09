@@ -1,4 +1,5 @@
 import { Capacitor } from '@capacitor/core';
+import type { DeliveryReceipt } from './api-types';
 import type { AnalysisResult, ClusterSummary, DashboardMetrics, DashboardSnapshot, Draft, DuplicatePage, Health, IncidentAnalysis, IncidentRecord, Page, Submission, SyncResult } from './api-types';
 
 export class ApiError extends Error {
@@ -54,6 +55,7 @@ export function multipart(draft: Draft, extra: object = {}): FormData {
   return data;
 }
 export const api = {
+  receipt: (id:string) => request<DeliveryReceipt>(`/receipts/${encodeURIComponent(id)}`),
   health: () => request<Health>('/health', undefined, undefined, 5000),
   analyze: (draft: Draft) => request<AnalysisResult>('/analyses', { method: 'POST', body: multipart(draft) }, undefined, analysisTimeout),
   create: (draft: Submission, network_online: boolean) => {

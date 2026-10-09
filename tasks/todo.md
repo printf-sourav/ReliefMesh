@@ -139,3 +139,8 @@ The user explicitly expanded scope after the original prototype freeze. Use `doc
 - [x] Reproduce and fix photo validation/inference races, operation timeouts and backend validation limits; add immutable rejected-source recovery. All three supplied regressions failed before fixes and pass now; 29 frontend tests/typecheck/build pass.
 - [ ] Implement and test native authenticated nearby sharing, durable packages/inboxes and foreground gateway delivery.
 - [ ] Recheck this host, build APK, verify live frontend loop and record physical two-phone outcomes separately.
+
+### Nearby WIP evidence
+
+- [x] Preserve packages, digest/UUID deduplication, receipt distinctions and IDB v1 migration in source; 35 frontend tests/typecheck/build/sync and four native handshake tests pass.
+- [ ] Android compilation, full foreground/inbox failure coverage and physical radio/device acceptance.

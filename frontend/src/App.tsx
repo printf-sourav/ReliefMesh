@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogTrigger } from './components/ui/dialog';
 import ReportPage from './pages/report';
 import DashboardPage from './pages/dashboard';
 import QueuePage from './pages/queue';
+import { initializeSharing } from './lib/mesh';
 interface Connection { online: boolean; setOnline: (value: boolean) => void; refresh: number; changed: () => void }
 const ConnectionContext = createContext<Connection>(null!);
 export const useConnection = () => useContext(ConnectionContext);
@@ -31,6 +32,8 @@ function ConnectionSettings() {
 const navigation = [{ to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard }, { to: '/report', label: 'Report', icon: ClipboardList }, { to: '/queue', label: 'Queue', icon: Radio }];
 export default function App() {
   const [online, setOnline] = useState(true); const [refresh, setRefresh] = useState(0); const navigate = useNavigate();
+  useEffect(()=>{let dispose:(()=>void)|undefined;let mounted=true;void initializeSharing().then(stop=>{if(mounted)dispose=stop;else stop();});return()=>{mounted=false;dispose?.();};},[]);
+  useEffect(()=>{const changed=()=>setRefresh(n=>n+1);window.addEventListener('reliefmesh-queue',changed);return()=>window.removeEventListener('reliefmesh-queue',changed);},[]);
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
     const listener = NativeApp.addListener('backButton', ({ canGoBack }) => {
