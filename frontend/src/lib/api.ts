@@ -38,7 +38,9 @@ function json(method: string, body?: unknown): RequestInit {
   return { method, headers: { 'Content-Type': 'application/json' }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) };
 }
 export function multipart(draft: Draft, extra: object = {}): FormData {
-  const { image, image_name, image_mime: _mime, ...metadata } = draft;
+  // Device retry records contain local bookkeeping; send only the agreed wire fields.
+  const { image, image_name, client_report_id, original_text, location, latitude, longitude } = draft;
+  const metadata = { client_report_id, original_text, location, latitude, longitude };
   const data = new FormData();
   data.append('image', image, image_name);
   data.append('metadata', JSON.stringify({ ...metadata, ...extra }));

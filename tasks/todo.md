@@ -30,9 +30,9 @@ Files: Gemma service, config/requirements, analysis tests. Dependencies: B1/B2. 
 
 Files: frontend package/config, app shell/styles, API client/types. Dependencies: contract/design brief. Scope: separate shell/config and API-client increments.
 
-- [ ] React/TypeScript/Tailwind/shadcn and tokens implement desktop/phone design direction.
+- [x] React/TypeScript/Tailwind/shadcn and tokens implement desktop/phone design direction. Sidebar, metrics/list/detail and phone form/bottom navigation visually checked; local Manrope bundled.
 - [x] Typed HTTP client, labelled opt-in mocks, browser proxy and APK API setting follow contract. Checkpoint 1: typed client and settings implemented; health fixture only; live contract validation pending.
-- [ ] Verify typecheck/build, navigation and 320/390/768/1440px layouts.
+- [x] Verify typecheck/build, navigation and 320/390/768/1440px layouts. Edge browser checks pass at all four widths, no horizontal overflow; build/typecheck pass.
 
 ## U2 - Early Android package (Developer 2)
 
@@ -68,7 +68,7 @@ Files: embedding/incident services, DB, duplicate tests. Dependencies: B1/B3. Sc
 
 Files: dashboard/detail pages, components, API client, review tests. Dependencies: U1; B2/B4 for live flow. Scope: separate list/detail and control increments.
 
-- [ ] Polished desktop/phone metrics, sources/photos, needs, language, dates and per-source counts render.
+- [x] Polished desktop/phone metrics, sources/photos, needs, language, dates and per-source counts render. Fixture screenshots and real browser interaction checked; API integration pending.
 - [ ] Human grouping, separate, correction, deferred analysis and verification call real routes.
 - [ ] Verify states, hub filtering, keyboard/focus, touch and source inspection.
 
@@ -85,7 +85,7 @@ Files: incident/sync services, routes, DB, sync/review tests. Dependencies: B1-B
 Files: queue storage/service/page, transport adapter, queue tests, Android config. Dependencies: U2/U3, B2/B5. Scope: separate storage/retry and native finish increments.
 
 - [x] IndexedDB commits UUID/text/location/image Blob/result/edits and handles quota errors. Four queue tests and form quota-failure check pass; browser restart/Android checks pending.
-- [ ] Device/server pending states differ; acknowledgment-before-dequeue and retries create one source.
+- [x] Device/server pending states differ; acknowledgment-before-dequeue and retries create one source. Actual browser Blob/reload + stub HTTP acknowledgment scenario passes; API/Android acceptance pending.
 - [ ] Verify APK cold start, picker/keyboard/safe-area/Back, unreachable-API save, force-close/reopen and reconnect.
 
 ## Checkpoint 2 - Branch handoff by 3:25 (both)

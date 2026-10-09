@@ -4,6 +4,7 @@ dist/
 .env.*
 !.env.example
 coverage/
+browser-artifacts/
 *.log
 android/.gradle/
 android/**/build/
