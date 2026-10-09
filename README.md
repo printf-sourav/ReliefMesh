@@ -64,6 +64,8 @@ On macOS/Linux use `.venv/bin/python`. Copy the root `.env.example` to ignored `
 
 The browser dev server proxies `/api` to `127.0.0.1:8000`. A production preview or APK needs `VITE_API_BASE_URL` (an origin without `/api/v1`) at build time or a saved origin in Connection settings. On a physical phone use a reachable laptop LAN/HTTPS address; phone localhost is the phone. Bind the API to `0.0.0.0` and configure explicit CORS clients. Responder routes have no production authentication; use a trusted demo network.
 
+This checkout's final check found an unrelated GroundOne API already on port 8000, returning 404 for ReliefMesh routes. Leave it running. Start ReliefMesh with `--port 8002` (or another free port), then save `http://127.0.0.1:8002` in Connection settings; use the laptop LAN equivalent for a phone. API paths remain `/api/v1`.
+
 For UI development only, `VITE_ENABLE_MOCKS=true` enables labelled private fixtures in the dev server. It never activates on network failure and is disabled in production builds. Synthetic illustrations and preset output do not establish model inference.
 
 Frontend checks: `npm run typecheck`, `npm test`, `npm run build`. The reproducible browser runner is `npm run browser:check`; see [demo verification](docs/demo.md) for its two test servers and isolated Edge/Playwright setup.

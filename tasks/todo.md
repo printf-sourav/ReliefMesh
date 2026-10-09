@@ -60,9 +60,9 @@ Files: report page, form components, API client, form tests. Dependencies: U1; B
 
 Files: embedding/incident services, DB, duplicate tests. Dependencies: B1/B3. Scope: medium.
 
-- [ ] Cached/persisted embeddings yield location-aware suggestions; unavailable matching is disclosed.
-- [ ] Human grouping/separation preserves sources/dismissals and avoids summing people.
-- [ ] Verify related/unrelated cases, no automatic merge and repeat-safe membership.
+- [x] Cached/persisted embeddings yield location-aware suggestions; unavailable matching is disclosed.
+- [x] Human grouping/separation preserves sources/dismissals and avoids summing people.
+- [x] Verify related/unrelated cases, no automatic merge and repeat-safe membership (real CPU model: A/B 0.984567, same-location fire 0.541896; details in backend handoff).
 
 ## U4 - Dashboard and review (Developer 2)
 
@@ -90,7 +90,7 @@ Files: queue storage/service/page, transport adapter, queue tests, Android confi
 
 ## Checkpoint 2 - Branch handoff by 3:25 (both)
 
-- [ ] Developer 1 tests pass; pushed backend handoff includes OpenAPI/examples/setup/live-model evidence.
+- [x] Developer 1 tests pass; backend handoff includes OpenAPI/examples/setup/live-model evidence and is delivered with the final backend branch checkpoint.
 - [ ] Developer 2 has web/phone fixture screens, durable queue and populated APK; commit before merge.
 - [ ] Both preserve/commit progress and push branch checkpoints.
 
@@ -98,9 +98,9 @@ Files: queue storage/service/page, transport adapter, queue tests, Android confi
 
 Files: handoff, sample report JSON, tests/requirements. Dependencies: B1-B5. Scope: medium.
 
-- [ ] Document models/runtime, install/start/CORS/env, multipart examples and actual test results.
-- [ ] Include illustrative A-C reports and disposable seed setup without personal data/secrets.
-- [ ] Verify clean temporary storage and give exact pushed handoff commit.
+- [x] Document models/runtime, install/start/CORS/env, multipart examples and actual test results (32 tests, live HTTP loop, real multilingual embeddings).
+- [x] Include illustrative A-C reports and disposable seed setup without personal data/secrets.
+- [x] Verify isolated temporary storage and repeat-safe seed; deliver exact pushed handoff commit to the human with this backend checkpoint.
 
 ## U6 - Integrated web/APK delivery (Developer 2)
 

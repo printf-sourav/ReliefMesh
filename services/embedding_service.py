@@ -4,7 +4,7 @@ import math
 from functools import lru_cache
 
 from database.db import connection
-from utils.config import settings
+from utils.config import ROOT, settings
 from utils.schemas import IncidentRecord, MatchingUnavailableError
 
 
@@ -12,7 +12,8 @@ from utils.schemas import IncidentRecord, MatchingUnavailableError
 def encoder(model_id: str, allow_download: bool):
     try:
         from sentence_transformers import SentenceTransformer
-        return SentenceTransformer(model_id, device="cpu", local_files_only=not allow_download)
+        return SentenceTransformer(model_id, device="cpu", cache_folder=str(ROOT / ".cache/embeddings"),
+                                   local_files_only=not allow_download)
     except Exception as exc:
         raise MatchingUnavailableError("Semantic model is unavailable. Install requirements-models.txt and prewarm the configured embedding model.") from exc
 
