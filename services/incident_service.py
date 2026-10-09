@@ -40,6 +40,12 @@ def _save(conn, record: IncidentRecord, *, archive_previous: bool = True) -> Non
 
 def create_report(draft: ReportDraft, result: AnalysisResult | None, *, network_online: bool,
                   edited_analysis: IncidentAnalysis | None = None) -> IncidentRecord:
+    return create_report_with_status(draft, result, network_online=network_online,
+                                     edited_analysis=edited_analysis)[0]
+
+
+def create_report_with_status(draft: ReportDraft, result: AnalysisResult | None, *, network_online: bool,
+                              edited_analysis: IncidentAnalysis | None = None) -> tuple[IncidentRecord, bool]:
     try:
         draft = ReportDraft.model_validate(draft.model_dump())
         if result:
@@ -66,7 +72,7 @@ def create_report(draft: ReportDraft, result: AnalysisResult | None, *, network_
                 if existing["request_hash"] != request_hash:
                     raise ConflictError("This report UUID was already used for a different source.",
                                         code="IDEMPOTENCY_CONFLICT")
-                return _from_row(existing)
+                return _from_row(existing), False
             report_id = str(uuid4())
             extension = {"image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp"}[draft.image_mime]
             timestamp = now()
@@ -90,7 +96,7 @@ def create_report(draft: ReportDraft, result: AnalysisResult | None, *, network_
             new_file = settings().upload_dir / record.image_path
             with new_file.open("xb") as stream:
                 stream.write(draft.image_bytes)
-        return record
+        return record, True
     except Exception:
         if new_file:
             new_file.unlink(missing_ok=True)

@@ -4,9 +4,11 @@ Branch: `feature/backend-ai`. Implementation started from planning commit `6d92a
 
 ## Current checkpoint
 
-SQLite report/image persistence, validated shared models, atomic UUID retries/payload conflicts, initial citizen edits with original-output retention, and raw deferred submissions are implemented. API, AI adapter, semantic matching, review controls and synchronization are next; this checkpoint is not a complete backend.
+SQLite report/image persistence, validated models, UUID retries/conflicts, original-output retention and deferred submissions are implemented. FastAPI now exposes health, multipart report creation, report lists/details, image retrieval and OpenAPI. AI, matching, review and sync routes are next; this checkpoint is not the complete backend.
 
-Python 3.12.10; dependencies pinned in `requirements-backend.txt`, installed with `uv pip install`. Backend tests use pytest and isolated temporary databases/images. `python -m pytest tests/backend/test_persistence.py -q --tb=short`: **7 passed** (5.13s). Update the validation record at subsequent checkpoints.
+Python 3.12.10; pinned dependencies in backend requirements. `python -m pytest tests/backend -q --tb=short`: **13 passed** (1.62s). One upstream Starlette warning recommends a future TestClient HTTP transport; this does not affect the passing contract checks. Tests use isolated storage and verify concurrent HTTP retries, pagination, CORS, safe images and consistent errors.
+
+Start: `python -m uvicorn api.main:app --host 0.0.0.0 --port 8000`. Open `/docs` or `/openapi.json` on the backend host. Phone requires the laptop's reachable LAN address; its own localhost cannot reach the laptop. No credentials are exposed by health or OpenAPI.
 
 ## Planned AI connections
 
