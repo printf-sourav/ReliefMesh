@@ -1,7 +1,7 @@
 import { beforeEach, expect, it, vi } from 'vitest';
 import { Blob as NodeBlob } from 'node:buffer';
 import { webcrypto } from 'node:crypto';
-import { openDB } from 'idb';
+import { deleteDB, openDB } from 'idb';
 import { preparePackage, parsePackage, forwardPackage } from './mesh-package';
 import { acknowledge, importRelay, listDelivered, listQueued, openQueueDB, saveQueued, updateQueued } from './queue';
 import { api } from './api';
@@ -42,8 +42,8 @@ it('retains pending receipt and mismatched API response',async()=>{
   await acknowledge(A,{id:B,client_report_id:A,sync_status:'pending'} as IncidentRecord);expect(await listQueued()).toHaveLength(1);
 });
 it('upgrades a version-one database without losing existing image bytes',async()=>{
-  // The migration callback uses oldVersion, so repeat openings never recreate stores.
-  const database=await openDB('reliefmesh-migration-test',1,{upgrade(db){db.createObjectStore('reports',{keyPath:'client_report_id'});}});await database.put('reports',source);database.close();
-  const upgraded=await openDB('reliefmesh-migration-test',2,{upgrade(db,old){if(old<2)db.createObjectStore('tombstones',{keyPath:'client_report_id'});}});
-  expect((await upgraded.get('reports',A)).image.size).toBe(source.image.size);upgraded.close();
+  await deleteDB('reliefmesh-device');
+  const database=await openDB('reliefmesh-device',1,{upgrade(db){db.createObjectStore('reports',{keyPath:'client_report_id'});}});await database.put('reports',source);database.close();
+  const upgraded=await openQueueDB();expect(upgraded.objectStoreNames.contains('tombstones')).toBe(true);
+  expect((await upgraded.get('reports',A))?.image.size).toBe(source.image.size);upgraded.close();
 });

@@ -19,15 +19,17 @@ final class RelayPackageValidator {
     static JSONObject validate(String json) throws Exception {
         if(json.getBytes(StandardCharsets.UTF_8).length>MAX_PACKAGE) throw new IllegalArgumentException("Package exceeds 16 MiB");
         JSONObject p=new JSONObject(json);keys(p,"version","origin_device_id","source_json","image_base64","content_sha256","hop_count","visited_device_ids");
-        if(p.getInt("version")!=1) throw new IllegalArgumentException("Unsupported package version");
-        uuid(p.getString("origin_device_id"));int hops=p.getInt("hop_count");JSONArray visited=p.getJSONArray("visited_device_ids");
+        if(!(p.get("version") instanceof Number)||((Number)p.get("version")).doubleValue()!=1) throw new IllegalArgumentException("Unsupported package version");
+        uuid(p.getString("origin_device_id"));Object hop=p.get("hop_count");if(!(hop instanceof Number)||!Double.isFinite(((Number)hop).doubleValue())||Math.floor(((Number)hop).doubleValue())!=((Number)hop).doubleValue())throw new IllegalArgumentException("Invalid hop count");int hops=((Number)hop).intValue();JSONArray visited=p.getJSONArray("visited_device_ids");
         if(hops<0||hops>3||visited.length()!=hops+1||!visited.getString(0).equals(p.getString("origin_device_id"))) throw new IllegalArgumentException("Invalid hop history");
         Set<String> devices=new HashSet<>();for(int n=0;n<visited.length();n++){String id=visited.getString(n);uuid(id);if(!devices.add(id))throw new IllegalArgumentException("Repeated device");}
         byte[] source=p.getString("source_json").getBytes(StandardCharsets.UTF_8);
         if(source.length>64*1024) throw new IllegalArgumentException("Metadata exceeds 64 KiB");
         String encoded=p.getString("image_base64");
-        if(encoded.length()>14*1024*1024||!encoded.matches("([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?"))throw new IllegalArgumentException("Invalid Base64 photo");
+        // Avoid recursive repeated-group regexes on multi-megabyte FILE payloads.
+        if(encoded.length()>14*1024*1024||encoded.length()%4!=0||!encoded.matches("[A-Za-z0-9+/]*={0,2}"))throw new IllegalArgumentException("Invalid Base64 photo");
         byte[] image=Base64.decode(encoded,Base64.NO_WRAP);
+        if(!Base64.encodeToString(image,Base64.NO_WRAP).equals(encoded))throw new IllegalArgumentException("Noncanonical photo encoding");
         if(image.length==0||image.length>10*1024*1024) throw new IllegalArgumentException("Photo must be 1 byte to 10 MiB");
         MessageDigest hash=MessageDigest.getInstance("SHA-256");hash.update(ByteBuffer.allocate(4).putInt(source.length).array());hash.update(source);hash.update(image);
         if(!RelayHandshake.equal(RelayHandshake.hex(hash.digest()),p.getString("content_sha256"))) throw new IllegalArgumentException("Digest mismatch");
@@ -54,6 +56,7 @@ final class RelayPackageValidator {
         keys(a,"incident_type","summary","people_affected","vulnerable_people","reported_needs","location_context","language","image_observations","confidence","verification_required");
         for(String key:new String[]{"incident_type","summary","location_context","language"})text(a,key,10000);
         for(String key:new String[]{"vulnerable_people","reported_needs","image_observations"}){JSONArray values=a.getJSONArray(key);for(int n=0;n<values.length();n++){JSONObject item=new JSONObject().put("item",values.get(n));text(item,"item",10000);}}
+        if(!a.has("people_affected")||!a.has("confidence"))throw new IllegalArgumentException("Missing analysis fields");
         if(!a.isNull("people_affected")){Object count=a.get("people_affected");if(!(count instanceof Number)||((Number)count).doubleValue()<0||Math.floor(((Number)count).doubleValue())!=((Number)count).doubleValue())throw new IllegalArgumentException("Invalid people count");}
         if(!a.isNull("confidence")){Object score=a.get("confidence");if(!(score instanceof Number)||!Double.isFinite(((Number)score).doubleValue())||((Number)score).doubleValue()<0||((Number)score).doubleValue()>1)throw new IllegalArgumentException("Invalid confidence");}
         if(!Boolean.TRUE.equals(a.get("verification_required")))throw new IllegalArgumentException("Analysis cannot verify a source");

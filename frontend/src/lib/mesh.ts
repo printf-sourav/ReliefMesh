@@ -77,7 +77,12 @@ async function sendPending(endpointId:string,peer:Peer) {
   try {await nearby.sendReport({endpointId,packageJson:JSON.stringify(forwardPackage(item.relay,peer.deviceId))});}
   catch(error) {publish({error:message(error)});}
 }
-export async function gatewayUpload(item:QueueItem) {
+const gateways=new Map<string,Promise<void>>();
+export function gatewayUpload(item:QueueItem) {
+  const existing=gateways.get(item.client_report_id);if(existing)return existing;
+  const delivery=uploadSource(item).finally(()=>gateways.delete(item.client_report_id));gateways.set(item.client_report_id,delivery);return delivery;
+}
+async function uploadSource(item:QueueItem) {
   // POST reconciles the immutable payload. UUID receipt alone never authorizes deletion.
   const record=await api.create(item,true);
   if(record.client_report_id!==item.client_report_id||!record.id) throw new Error('API acknowledgment did not match this source.');
@@ -102,6 +107,7 @@ export function wakeSharing() {
       for(const [endpointId,peer] of peers) await sendPending(endpointId,peer);
       let reachable=false;try {const health=await api.health();reachable=health.status==='ok';}catch{ /* Retain all pending sources. */ }
       if(reachable&&foreground) for(const item of await listQueued()) {
+        if(!foreground||!snapshot.native?.enabled) break;
         if(item.rejected||item.superseded_by||item.attempts>=6||(item.retry_at??0)>Date.now()) continue;
         try {await gatewayUpload(item);}
         catch(error) {

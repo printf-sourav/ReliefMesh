@@ -1,30 +1,48 @@
-# Android build status
+# Android build and artifact
 
-Capacitor core/CLI/Android `7.4.3`, App plugin `7.0.1`; app `org.reliefmesh.app`, name ReliefMesh, bundled `dist` with hash navigation. Native Android source and Gradle wrapper are committed. Generated web assets, build outputs, machine SDK paths and signing material are excluded.
+The debug APK now builds. Earlier missing-Java/SDK results in the chronological frontend handoff are superseded. Android compilation is separate from installation and physical two-phone acceptance, which remain unverified.
 
-9 October 2026 early gate: `cap add android` succeeded. `gradlew.bat assembleDebug` failed with exit 1:
+## Toolchain and reproduction
 
-```text
-ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
-Please set the JAVA_HOME variable in your environment to match the
-location of your Java installation.
-```
+App ID `org.reliefmesh.app`, version `1.0`/code `1`; Capacitor core/CLI/Android `7.4.3`, App plugin `7.0.1`, JDK 21, Android compile/target SDK 35 and minSdk 23. The Gradle wrapper uses 8.11.1 with AGP 8.7.2. Nearby Connections is pinned to `19.3.0`: Google's AAR manifest supports minSdk 21. The first build with `19.5.1` failed manifest merging because that library requires minSdk 24; no overrideLibrary or minimum-version bypass was used.
 
-No Android SDK environment or usual local SDK/Android Studio installation was found; `adb` is unavailable. No APK binary/checksum/device evidence exists yet. APK acceptance is incomplete.
+This host uses checksum-verified Temurin JDK `21.0.12.1+1` and official Google SDK command-line tools in ignored `.cache/android-tools`. Platform 35, build-tools 35.0.0 and platform-tools were installed; AGP also installed its default build-tools 34.0.0. Set `JAVA_HOME` to a JDK 21 installation, `ANDROID_HOME`/`ANDROID_SDK_ROOT` to an SDK containing platform 35, and add their executable directories to PATH. Machine paths, SDK downloads, licenses, caches, keys and build outputs are excluded from Git.
 
-Final source check: production frontend build and `cap sync android` passed with 1,671 modules (5.63s build, 0.375s sync). Debug manifest alone enables cleartext. MainActivity enables mixed content only when `BuildConfig.DEBUG`; explicit `buildFeatures.buildConfig` is enabled. These Java/manifest changes remain uncompiled because the JDK is absent. File input supports gallery and an optional camera capture intent; cancellation/permissions/keyboard/Back on a real Android device are unverified.
-
-Use the [Capacitor 7 environment requirements](https://capacitorjs.com/docs/v7/getting-started/environment-setup). With JDK and Android SDK installed:
+From a feature checkout:
 
 ```powershell
 cd frontend
 npm ci
+npm run typecheck
+npm test
 npm run build
 npx cap sync android
 cd android
-.\gradlew.bat assembleDebug
+.\gradlew.bat --no-daemon testDebugUnitTest lintDebug assembleDebug
 ```
 
-Then copy `app/build/outputs/apk/debug/app-debug.apk` to an artifact named `ReliefMesh-demo.apk`, record SHA-256 and source commit, and separately install/launch/test using `adb install -r` on a named device. Desktop screenshots cannot establish device behavior.
+Capacitor bundles production web assets; no development-server URL is configured. Debug alone permits LAN HTTP/mixed content; release configuration prohibits cleartext. Configure Connection settings with the backend's bare origin, without `/api/v1`. A physical phone uses the laptop LAN/HTTPS origin; emulator alias is `http://10.0.2.2:8002` when the API runs on port 8002. Python/AI and all provider tokens stay on the backend.
 
-APK contains React assets only; the model/API runs on a reachable laptop. Set backend origin to an HTTPS host or laptop LAN origin; emulator host alias is `http://10.0.2.2:8000`. Local HTTP must be enabled only for debug builds. Test actual multipart/photo fetching, picker cancellation/permissions, keyboard/safe areas/Back, unreachable-API save, force-close/reopen and one delivery after reconnect. No background synchronization guarantee.
+## Actual build evidence
+
+Initial native compile/unit/APK run: **BUILD SUCCESSFUL in 3m 21s**, 124 tasks. Gradle's authentication suite: **4 tests, 0 failures/errors/skips**, covering wrong key/group, changed raw-token transcript, reflection/replay and mutual proof acknowledgment before incident data. These tests establish protocol behavior in Java; they do not establish Nearby radio behavior.
+
+Additional lint initially found 11 API-compatibility errors from Java collection APIs unavailable on Android 6. Compatible iteration/access fixed all errors. Transfer cleanup cancels stalled/disconnected files after a bounded timeout while preserving durable origin/inbox copies. Combined `testDebugUnitTest lintDebug assembleDebug`: **BUILD SUCCESSFUL in 1m 37s**, 176 tasks; app lint **0 errors, 22 warnings**. Warnings include pinned dependency updates, template resources, ignored newer permission flags on older Android, synchronous durable preferences and backup configuration suggestions. No lint baseline/suppression was added. Other nonfatal build warnings include generated flatDir repositories, SDK XML version mismatch and deprecated SDK APIs.
+
+## Artifact and installation
+
+The generated source APK is `frontend/android/app/build/outputs/apk/debug/app-debug.apk`. Deliver it separately as `ReliefMesh-demo.apk`; APKs and debug signing material are ignored. Exact source commit, artifact checksum and final build results will be recorded at the artifact checkpoint.
+
+`adb devices -l` was actually run and returned an empty device list. Neither installation nor launch occurred. Connect both authorized phones with USB debugging and Google Play services, then install the same delivered artifact on each named serial:
+
+```powershell
+adb devices -l
+adb -s PHONE_A_SERIAL install -r PATH_TO_ReliefMesh-demo.apk
+adb -s PHONE_B_SERIAL install -r PATH_TO_ReliefMesh-demo.apk
+adb -s PHONE_A_SERIAL shell am start -n org.reliefmesh.app/.MainActivity
+adb -s PHONE_B_SERIAL shell am start -n org.reliefmesh.app/.MainActivity
+```
+
+Follow every step in [the two-phone acceptance scenario](nearby-relay.md#two-phone-demonstration-and-acceptance). Join the same one-time group in Queue, grant version-specific Android permissions and enable sharing. Keep both apps foregrounded with Bluetooth/Wi-Fi enabled. No per-peer acceptance dialog is implemented. Verify B's durable received photo, later gateway upload, A's same-payload reconciliation, one backend UUID, wrong group, denied permissions, interrupted transfer, digest conflict and storage failure. Also verify native picker cancellation, keyboard/safe areas/Back and LAN API access. Multi-hop routing needs a third-device scenario before it can be claimed tested.
+
+References: [Capacitor 7 environment requirements](https://capacitorjs.com/docs/v7/getting-started/environment-setup), [Nearby setup](https://developers.google.com/nearby/connections/android/get-started), [FILE completion and scoped-storage URI access](https://developers.google.com/nearby/connections/android/exchange-data), [Android Java API compatibility](https://developer.android.com/studio/write/java8-support).

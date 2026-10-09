@@ -38,9 +38,9 @@ Files: frontend package/config, app shell/styles, API client/types. Dependencies
 
 Files: Capacitor config, Android source/wrapper, npm scripts, frontend env. Dependencies: U1 minimal shell. Scope: generated native project plus focused config.
 
-- [x] Verify SDK/JDK/Node/Capacitor by 0:25; build minimal APK by 0:45 or record concrete blocker. Node 24/Capacitor 7 work; Gradle exits 1 because JAVA_HOME/java is missing; SDK/adb unavailable. No APK built.
+- [x] Verify SDK/JDK/Node/Capacitor by 0:25; build minimal APK by 0:45 or record concrete blocker. Early missing-Java/SDK result recorded. On resumed work, workspace-local JDK 21/SDK 35 provisioned and debug APK/native unit build passed; physical devices remain absent.
 - [ ] Bundled app opens without Vite server; routing/name/ID and API reachability are correct.
-- [ ] Record Gradle output separately from actual emulator/device installation/launch.
+- [x] Record Gradle output separately from actual emulator/device installation/launch. Gradle testDebugUnitTest/assembleDebug passed; adb lists no devices, so no installation/launch claim.
 
 ## U3 - Citizen report (Developer 2)
 
@@ -142,5 +142,9 @@ The user explicitly expanded scope after the original prototype freeze. Use `doc
 
 ### Nearby WIP evidence
 
-- [x] Preserve packages, digest/UUID deduplication, receipt distinctions and IDB v1 migration in source; 35 frontend tests/typecheck/build/sync and four native handshake tests pass.
-- [ ] Android compilation, full foreground/inbox failure coverage and physical radio/device acceptance.
+- [x] Preserve packages, digest/UUID deduplication, receipt distinctions and actual IDB v1 migration in source; expanded frontend suite passes 39 tests, including automatic gateway, native-inbox quota retention, shared manual/automatic upload and stop-during-upload checks.
+- [x] Provision ignored JDK 21/SDK 35 and compile the native plugin/APK; four Gradle authentication tests pass. Latest compatible Nearby pin is 19.3.0 for retained minSdk 23; 19.5.1 requires minSdk 24.
+- [x] Actual HTTP smoke verifies receipt route and permanent 422 rejection recovery through the UI/new UUID, preserving the original until replacement acknowledgment. Nine Edge scenarios pass with no page/fixture-console errors.
+- [ ] Deliver final APK checksum and exact source commit after source freeze.
+- [ ] Install on both physical phones and complete all radio/permission/restart/interruption/conflict/storage-failure acceptance checks.
+- [ ] Configure a reachable live ReliefMesh backend and complete the frontend Hugging Face analyze/edit/save/review loop.

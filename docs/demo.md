@@ -1,16 +1,38 @@
 # Demonstration and verification
 
-Use the real API by default. Browser app: `cd frontend; npm ci; npm run dev`. In Connection settings, test the API origin. Empty origin uses the Vite proxy to port 8000; a phone requires a reachable laptop LAN/HTTPS origin.
+The current branch includes reviewed source/photo race fixes, 120-second explicit inference requests, backend validation/rejected-source recovery, authenticated native nearby sharing, durable relay queues and automatic foreground gateway transport. Fixture tests, live inference, APK compilation and physical radio acceptance have separate evidence.
 
-For isolated UI development only, set `VITE_ENABLE_MOCKS=true` for `npm run dev`. The amber banner, fixture model badge, synthetic test illustration and preset suggestion disclose simulated data. Fixture changes reset on reload. Production builds disable this adapter even if the variable is set. It cannot establish real AI, embeddings or SQLite durability.
+## Startup
 
-## Browser verification on 9 October 2026
+Use the real API by default. On this host port 8000 serves an unrelated GroundOne API; leave it running and use a free ReliefMesh port such as 8002. Configure the root ignored `.env` with backend-only provider settings, start FastAPI, then run the frontend on the user-requested 8001:
 
-Typecheck and production build passed. Vitest: 12 passed (multipart/metadata/origin 3, queue 4, form 5). `tests/browser-check.cjs` passed 9 scenarios in an isolated Microsoft Edge session at 320, 390, 768 and 1440px; no horizontal overflow or uncaught page errors. Screenshots include populated dashboard/detail, empty form/queue, editable analysis and an actual browser device queue restored after reload. Desktop dashboard and phone form were visually inspected.
+```powershell
+.\.venv\Scripts\python.exe -m uvicorn api.main:app --host 0.0.0.0 --port 8002
+```
 
-The production transport test aborts the HTTP request, saves a real Blob to IndexedDB, reloads, restores a stub acknowledgment and checks only one stable UUID upload. This proves browser transport/storage behavior against the agreed envelope; it is not an integrated FastAPI or Android test. Fixture review controls test explicit group/separate/correct/verify and verification reset.
+```powershell
+cd frontend
+npm ci
+npm run dev -- --port 8001
+```
 
-Reproduce with two terminals:
+Set Connection settings to `http://127.0.0.1:8002` for the browser or the laptop's LAN/HTTPS origin for a phone. Origins contain no `/api/v1`. Empty origin uses the development proxy to 8000, so explicit configuration is required on this host. Provider credentials must never enter `VITE_*` or Git. The actual 8001 frontend responds HTTP 200.
+
+## Current automated evidence, 9 October 2026
+
+- Frontend: **39 tests passed across 12 files**, including all three supplied review regressions, late inference/reversed photo validation, exact text/byte/pixel bounds, operation-specific timeouts, immutable recovery, actual IDB v1 migration, UUID/digest conflicts, receipts/tombstones and automatic gateway behavior. Mock-native tests verify quota failure retains the native inbox, manual/automatic retry shares one request, and disabling sharing stops subsequent uploads. They do not prove native radio transfer.
+- Backend: **36 tests passed**, one upstream Starlette/httpx deprecation warning, isolated temporary SQLite/uploads and explicit fixture mode. The receipt extension remains intact.
+- Nine isolated Edge scenarios passed at 320/390/768/1440px: dashboard/detail/search, grouping/correction/verification reset/separation, editable fixture reporting, focus return and real browser Blob save/reload/one UUID acknowledgment. No horizontal overflow, uncaught page errors or fixture console errors; mobile buttons meet 44px touch targets.
+- Actual HTTP integration passed against FastAPI/SQLite/multipart/photo endpoints with explicit backend fixture AI and matching disabled. It covers original/citizen edits, human review, backend restarts, deferred saves, repeated sync, receipt lookup and an old persisted invalid source receiving 422 then recovering through the UI into a new UUID. Original text/photo remain saved until replacement acknowledgment. Four intended server sources, no missing expected routes and no uncaught page errors.
+- Production typecheck/build/Capacitor sync pass; native compilation/APK and four Gradle authentication tests pass. Final APK/checksum/source and lint evidence are in [Android build](android-build.md).
+
+Screenshots and JSON results are external artifacts under the chat's `relay-browser` folder, with generated runtime files excluded from Git. Dashboard/phone queue/report screenshots were visually inspected. An initial HTTP recovery locator was ambiguous because the legacy textarea's accessible name included its contents; the explicit `Recovered description` label fixed it and the actual HTTP smoke reran successfully.
+
+## Reproduce browser and HTTP checks
+
+Fixture UI is an explicit development-only adapter. It shows an amber banner, fixture model label and synthetic illustration, resets on reload and is disabled in production. It never establishes genuine AI or embeddings.
+
+Run a fixture dev server on 5173:
 
 ```powershell
 cd frontend
@@ -18,29 +40,22 @@ $env:VITE_ENABLE_MOCKS='true'
 npm run dev -- --port 5173
 ```
 
+In another terminal, without fixture variables:
+
 ```powershell
 cd frontend
 npm run build
 npm run preview -- --port 4173
 ```
 
-Then `npm run browser:check`. Install Playwright Chromium if Edge is unavailable, set `RELIEFMESH_BROWSER_CHANNEL` appropriately, and configure the runner URLs if ports differ. Output goes to ignored `browser-artifacts/`; no runtime files are committed.
+Then run `npm run browser:check` and `npm run test:http` from frontend. The browser runner launches an isolated Microsoft Edge profile; install Playwright Chromium or set `RELIEFMESH_BROWSER_CHANNEL` if needed. `RELIEFMESH_BROWSER_OUTPUT` selects an external/ignored artifact directory. Fixture and production origins can be set with `RELIEFMESH_FIXTURE_URL`/`RELIEFMESH_PRODUCTION_URL`.
 
-## Real acceptance still required
+The HTTP runner starts and stops its own disposable fixture API on **8002**, preserving the user's frontend on 8001. Set `RELIEFMESH_HTTP_PORT` when needed. It uses the root `.venv`, temporary DB/uploads and semantic matching disabled; no paid inference is performed.
 
-- A/B: submit City School reports, inspect real embedding matching or disclosed unavailability, manually confirm grouping, inspect both originals, and keep separate/dismiss.
-- C: submit Hinglish text and a suitable licensed/synthetic flood photo to genuine Gemma, review/edit fields, save with original/provenance retained, correct and verify.
-- D: set simulated transport offline, submit to reachable API, restart backend, restore transport and sync twice; exactly one delivery. Analyze saved deferred sources explicitly.
-- E: build/install actual APK, make API unreachable, save text/photo, force-close/reopen, reconnect, upload one UUID, analyze explicitly and review/verify.
+## Acceptance still open
 
-The APK has not built: Java is unavailable. No Android device/installation evidence or frontend live-Gemma loop is claimed. The backend owner separately records one successful live Gemma 4 smoke in `backend-handoff.md`; the full route set is now integrated, and the HTTP smoke uses explicit fixtures. See `android-build.md` and `frontend-handoff.md` for exact blockers and next steps. Responder endpoints have no production authentication; use a trusted demo network.
+No connected devices were listed by adb. Install the same APK on both physical phones and run every [two-phone relay check](nearby-relay.md#two-phone-demonstration-and-acceptance), plus native picker/cancel/permissions, force-close storage recovery, keyboard/safe areas/Back and LAN API access. Build success and mock-native behavior are not physical-device proof.
 
-## Integrated HTTP verification
+No reachable configured live ReliefMesh backend was available: 8000 health is 404 and 8002/8080 were unreachable outside the disposable test. This checkout has no backend `.env` and its process has no HF token. A reachable backend origin or backend-only environment-file path is required for the frontend genuine Hugging Face analyze/edit/save/review loop. The backend owner records separate live Gemma/semantic evidence; this frontend run used fixtures. Keep semantic unavailability disclosed until the chosen runtime/cache is verified. Deferred transport never automatically invokes AI.
 
-`npm run test:http` launches a disposable API on port 8001 using the root `.venv`, temporary SQLite/uploads and explicit fixture AI with semantic matching disabled. Keep production preview running on port 4173. It checks multipart original/citizen edits, safe images, human correction/verification reset, actual browser Blob restore, raw deferred reconnect upload, repeat upload count, two API restarts, deferred verification rejection, explicit saved-source analysis, offline backend queue/repeated sync, and human A/B grouping. It also verifies the dashboard displays unavailable matching rather than zero. All expected OpenAPI routes exist. No paid inference is performed. The subprocess is stopped afterward.
-
-Integrated backend suite: 32 passed with one upstream Starlette TestClient deprecation warning. Final frontend suite: 14 passed (including matching headers and LAN-browser UUID fallback); typecheck/build/Capacitor sync passed. One earlier form test exceeded the default 5s timeout during a slow run; UI test timeout is now 15s with unchanged assertions, and reruns pass. Exact run evidence is recorded in the handoff. Android acceptance and a frontend live-provider loop remain open.
-
-Final browser check also verifies 44px mobile button targets and actual touch navigation; all nine scenarios pass with zero fixture console errors. Final backend handoff `bb51e84` and its cache-path change pass the same 32-test suite and actual HTTP smoke. Backend live Gemma/semantic evidence is recorded by its owner separately. The claimed local live API on port 8000 is an unrelated GroundOne API on this host; configure ReliefMesh on another port and set Connection origin before a live UI rehearsal.
-
-Tested integrated source: `6ef4ec6ba3ab0b6e3ccc3bf47c3b2caf2e0e0a2f`. PR creation was denied by the GitHub integration (403 `Resource not accessible by integration`); the pushed [compare view](https://github.com/printf-sourav/ReliefMesh/compare/main...feature/frontend-demo) is available for review. APK and live frontend acceptance remain incomplete.
+The branch is reviewable with these limitations; full acceptance is incomplete. Do not merge main or deploy. PR creation previously failed with GitHub integration 403 `Resource not accessible by integration`; the pushed [compare view](https://github.com/printf-sourav/ReliefMesh/compare/main...feature/frontend-demo) remains available.

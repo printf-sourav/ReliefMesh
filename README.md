@@ -4,7 +4,7 @@ Frontend inference requests allow 120 seconds by default, aligned with the backe
 
 A local prototype for turning multilingual citizen reports with images into structured incidents for human responders.
 
-**Current status:** the responsive React reporting/review/queue UI, full FastAPI route set and Capacitor native source are integrated on `feature/frontend-demo`. Actual HTTP/SQLite/fixture-analysis flows pass. The backend handoff records a separate successful live Gemma smoke; full frontend live inference, real embedding availability, and Android APK/device acceptance remain incomplete. See the exact results in [frontend handoff](docs/frontend-handoff.md), [backend handoff](docs/backend-handoff.md), [demo checks](docs/demo.md), and [Android build status](docs/android-build.md).
+**Current status:** the responsive reporting/review/queue UI, reviewed source-consistency fixes, full FastAPI routes and native authenticated Nearby relay are integrated on `feature/frontend-demo`. Frontend, actual HTTP/SQLite/fixture-analysis and Android compilation/unit checks pass; a debug APK has built. Physical two-phone acceptance and a frontend live-provider loop remain incomplete. See [frontend handoff](docs/frontend-handoff.md), [backend handoff](docs/backend-handoff.md), [demo checks](docs/demo.md), and [Android build and artifact](docs/android-build.md) for actual evidence.
 
 ## Start two Codex chats
 
@@ -42,6 +42,8 @@ Use one shared frontend with purpose-built desktop and phone layouts. Follow the
 
 Voice, resource matching, actual device mesh networking, and deployment are outside the initial build.
 
+The user subsequently authorized automatic Android nearby relay through Google Nearby Connections. Its foreground implementation, one-time group setup and separate storage/delivery states follow [the relay extension](docs/nearby-relay.md). Browser builds explain that real nearby transfer requires Android; physical radio behavior remains unverified.
+
 The supplied brief names **Gemma 4**. Developers must verify the event-required model and available multimodal runtime before choosing an implementation; no unverified model identifier is prescribed here. Fixture analysis can support UI development but cannot prove the live AI requirement.
 
 ## Running the app
@@ -59,7 +61,7 @@ In a second terminal:
 ```powershell
 cd frontend
 npm ci
-npm run dev
+npm run dev -- --port 8001
 ```
 
 On macOS/Linux use `.venv/bin/python`. Copy the root `.env.example` to ignored `.env` and configure the model/provider on the backend only; review [backend setup and availability](docs/backend-handoff.md). Never put tokens into `VITE_*`. Default analysis mode is live, and API health does not prove inference. Explicit backend fixture mode supports only the documented A-C sample reports.
@@ -82,8 +84,8 @@ cd android
 .\gradlew.bat assembleDebug
 ```
 
-Native source uses app ID `org.reliefmesh.app` and bundles `dist`; it does not point at a Vite server. Local HTTP/mixed content is permitted only in debug configuration. **No APK artifact exists yet:** this machine's Gradle build fails because `JAVA_HOME` and `java` are missing; Android SDK/adb were also not found. Compilation and device testing remain separate requirements. The APK bundles React, while Python/Gemma stays on the backend.
+Native source uses app ID `org.reliefmesh.app`, SDK 35 and JDK 21, with bundled production `dist`. Local HTTP/mixed content is permitted only in debug configuration. Android build/unit checks now pass with a workspace-local ignored toolchain; earlier missing-Java/SDK results are superseded. Artifact checksum/source and installation instructions are recorded in [Android build status](docs/android-build.md). No connected adb device was found. The APK bundles React, while Python/Gemma stays on the backend.
 
-Offline behavior: a reachable API with simulated transport offline stores a backend pending source; an unreachable API retains text/photo/UUID in device IndexedDB. Failed/unknown deliveries stay in the device queue until a matching acknowledgment. Deferred reports remain analysis-pending after delivery and require explicit saved-source analysis. No peer mesh, on-device model, guaranteed background sync or deployment is implemented.
+Offline behavior: a reachable API with simulated transport offline stores a backend pending source; an unreachable API retains text/photo/UUID in device IndexedDB. Failed/unknown deliveries stay in the device queue until a matching acknowledgment. Deferred reports require explicit saved-source analysis after delivery. In Android, enable Nearby Sharing in Queue after joining the same group on both phones. Authenticated transfers and API gateway retries operate in the foreground; peer storage or a relay delivery hint retains the origin's copy until its own same-payload API confirmation. On-device inference and guaranteed background delivery are outside this implementation.
 
 See [the condensed prototype brief](docs/prototype-brief.md) for the agreed demo journey. Event rules quoted in the original pasted text have not been independently verified.
