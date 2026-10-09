@@ -115,3 +115,12 @@ Files: README, demo/frontend/Android handoffs, sample images, integration checks
 - [ ] Genuine live-AI loop passes, or inference blocker is explicitly reported.
 - [ ] Desktop/phone finish gate and APK build/install outcomes are honest and separate.
 - [ ] No secrets/generated runtime artifacts tracked; progress committed/pushed with final handoff.
+
+## Authorized extension - Automatic nearby relay
+
+The user explicitly expanded scope after the original prototype freeze. Use `docs/nearby-relay.md` and `prompts/nearby-relay-frontend.md`; existing completed tasks remain intact.
+
+- [x] Developer 1: typed receipt lookup and relay retry/conflict/provenance/restart tests; 36 backend tests pass and live receipt route checked.
+- [x] Developer 1: publish automatic Nearby protocol/frontend-native handoff and a recheck of frontend build, 12 tests and real browser HTTP/queue flow.
+- [ ] Developer 2: merge the complete backend; add native Nearby plugin/group authentication/automatic accept and foreground transfer, durable relay storage, receipts and nearby UI.
+- [ ] Developer 2: build APK and prove automatic two-phone photo/report relay, interrupted-transfer recovery and one server source after gateway/origin retries.

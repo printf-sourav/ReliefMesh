@@ -184,6 +184,13 @@ class SyncResult(Schema):
     pending_count: int
 
 
+class DeliveryReceipt(Schema):
+    client_report_id: Identifier
+    report_id: Identifier
+    accepted_at: str
+    sync_status: Literal["pending", "synced"]
+
+
 T = TypeVar("T")
 
 

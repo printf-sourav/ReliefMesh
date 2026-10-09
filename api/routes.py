@@ -11,7 +11,7 @@ from services import gemma_service, incident_service, sync_service
 from utils.config import settings
 from utils.schemas import (
     MAX_IMAGE_BYTES, AnalysisResult, AnalysisUpdate, ClusterSummary, CreateMetadata,
-    DashboardMetrics, DuplicatePage, ImageTooLargeError, IncidentRecord, MatchingUnavailableError, MembershipUpdate, NotFoundError, Page,
+    DashboardMetrics, DeliveryReceipt, DuplicatePage, ImageTooLargeError, IncidentRecord, MatchingUnavailableError, MembershipUpdate, NotFoundError, Page,
     ReportDraft, ReportMetadata, SyncRequest, SyncResult, ValidationError,
 )
 
@@ -74,6 +74,11 @@ def reports(synced_only: bool = False, offset: Offset = 0, limit: Limit = 50):
 @router.get("/reports/{report_id}", response_model=IncidentRecord)
 def report(report_id: UUID):
     return incident_service.get_report(str(report_id))
+
+
+@router.get("/receipts/{client_report_id}", response_model=DeliveryReceipt)
+def receipt(client_report_id: UUID):
+    return incident_service.get_delivery_receipt(str(client_report_id))
 
 
 @router.get("/reports/{report_id}/image", response_class=FileResponse)
