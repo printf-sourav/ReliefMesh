@@ -4,7 +4,7 @@
 
 The user approved Bluetooth/BLE + Wi-Fi via Google Nearby Connections and has two Android phones with Google Play services. They explicitly want automatic device acceptance and report transfer without an Accept/Reject dialog for each connection. Provide one Nearby Sharing enable action, required Android permission prompts and one shared demo-group setup. Afterwards the app discovers, connects, authenticates and transfers automatically while in the foreground.
 
-Backend support is implemented: existing repeat-safe multipart upload, durable raw deferred reports, original/provenance preservation, and additive `GET /api/v1/receipts/{client_report_id}`. The native plugin and frontend changes below are Developer 2's implementation work. No actual radio transfer or APK installation has been proved by the backend tests.
+Backend support is implemented: existing repeat-safe multipart upload, durable raw deferred reports, original/provenance preservation, and additive `GET /api/v1/receipts/{client_report_id}`. Backend extension `c8f4d45` was incorporated into `feature/frontend-demo` at `ebd3b5e` while the review handoff was being published. The native plugin and frontend changes below are Developer 2's implementation work. No actual radio transfer or APK installation has been proved by the backend tests.
 
 This is store-and-forward application behavior. Nearby supplies links between devices in radio range; it does not automatically route reports across disconnected phones. Any onward forwarding must use the durable relay queue described here. Do not claim an always-running background mesh.
 
