@@ -1,5 +1,5 @@
 import { useEffect, useState, createContext, useContext } from 'react';
-import { NavLink, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import { NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { App as NativeApp } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
 import { Activity, ClipboardList, LayoutDashboard, Send, Settings2 } from 'lucide-react';
@@ -33,6 +33,8 @@ const citizenNavigation = [{ to: '/report', label: 'Report', icon: Send }, { to:
 export default function App() {
   const citizen = Capacitor.isNativePlatform() || import.meta.env.VITE_APP_MODE === 'citizen';
   const home = citizen ? '/report' : '/dashboard';
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0,0); }, [pathname]);
   const [online, setOnline] = useState(true); const [refresh, setRefresh] = useState(0); const navigate = useNavigate();
   useEffect(()=>{let dispose:(()=>void)|undefined;let mounted=true;void initializeSharing().then(stop=>{if(mounted)dispose=stop;else stop();});return()=>{mounted=false;dispose?.();};},[]);
   useEffect(()=>{const changed=()=>setRefresh(n=>n+1);window.addEventListener('reliefmesh-queue',changed);return()=>window.removeEventListener('reliefmesh-queue',changed);},[]);
