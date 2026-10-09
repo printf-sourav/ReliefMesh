@@ -1,0 +1,262 @@
+{
+  "source_commit": "ac39a8b696137ac84aed17413a22e10c53bbe68b",
+  "apk": "artifacts/ReliefMesh-demo.apk",
+  "sha256": "8487c7a327982128f13bfea4c5093d6e1185835923c9b5199e9edec5fd8283c9",
+  "bytes": 5345987,
+  "application_id": "org.reliefmesh.app",
+  "version_code": "1",
+  "version_name": "1.0",
+  "min_sdk": 23,
+  "target_sdk": 35,
+  "debug_build": true,
+  "signature_verification": [
+    "Verifies",
+    "Verified using v1 scheme (JAR signing): true",
+    "Verified using v2 scheme (APK Signature Scheme v2): true",
+    "Verified using v3 scheme (APK Signature Scheme v3): false",
+    "Verified using v3.1 scheme (APK Signature Scheme v3.1): false",
+    "Verified using v4 scheme (APK Signature Scheme v4): false",
+    "Verified for SourceStamp: false",
+    "Number of signers: 1",
+    "Signer #1 certificate DN: C=US, O=Android, CN=Android Debug",
+    "Signer #1 certificate SHA-256 digest: 96d3c1ab690e075a3fd95faa122960afb60eeaa3018dca180c24a16b67d21fcc",
+    "Signer #1 certificate SHA-1 digest: 6a5b37c8618e4c5b87b5fbecb4c1fe6905277dff",
+    "Signer #1 certificate MD5 digest: d49a83afe71f2c55645856625f8aa65c",
+    "Signer #1 key algorithm: RSA",
+    "Signer #1 key size (bits): 2048",
+    "Signer #1 public key SHA-256 digest: ac8b0a44741b5996b6a2e9487a08d2c3dc6699445277030af81aa3dd78144c65",
+    "Signer #1 public key SHA-1 digest: e3069cb05001d06a162aaa429925009fe89687f5",
+    "Signer #1 public key MD5 digest: fc00c9d146b464f1e23751bec758a171",
+    "WARNING: META-INF/com/android/build/gradle/app-metadata.properties not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.activity_activity.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.annotation_annotation-experimental.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.appcompat_appcompat-resources.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.appcompat_appcompat.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.arch.core_core-runtime.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.coordinatorlayout_coordinatorlayout.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.core_core-ktx.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.core_core-splashscreen.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.core_core.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.cursoradapter_cursoradapter.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.customview_customview.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.drawerlayout_drawerlayout.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.emoji2_emoji2-views-helper.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.emoji2_emoji2.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.fragment_fragment.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.interpolator_interpolator.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.lifecycle_lifecycle-livedata-core.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.lifecycle_lifecycle-livedata.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.lifecycle_lifecycle-process.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.lifecycle_lifecycle-runtime.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.lifecycle_lifecycle-viewmodel-savedstate.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.lifecycle_lifecycle-viewmodel.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.loader_loader.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.profileinstaller_profileinstaller.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.savedstate_savedstate.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.startup_startup-runtime.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.tracing_tracing.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.vectordrawable_vectordrawable-animated.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.vectordrawable_vectordrawable.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.versionedparcelable_versionedparcelable.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.viewpager_viewpager.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/androidx.webkit_webkit.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/kotlinx_coroutines_android.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/kotlinx_coroutines_core.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/services/kotlinx.coroutines.CoroutineExceptionHandler not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.",
+    "WARNING: META-INF/services/kotlinx.coroutines.internal.MainDispatcherFactory not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/."
+  ],
+  "production_assets": [
+    {
+      "path": "assets/index-Besw3qD6.css",
+      "sha256": "311eb4e7ae8594d19d451aff755cf80c121a02abfc7c5b9a16d4aab580a191df"
+    },
+    {
+      "path": "assets/index-rhBJjym9.js",
+      "sha256": "83bdaaa791d9b83d175ff57373d63f1b4705498a74e840f6ab4cc37ac415cbc7"
+    },
+    {
+      "path": "assets/manrope-cyrillic-400-normal-BMzJvInZ.woff2",
+      "sha256": "5a987d1484070f1ea54de7c10ebfa4057a18e379361dbe5fd5c4fa4c2d95ef39"
+    },
+    {
+      "path": "assets/manrope-cyrillic-400-normal-Dvx59UGC.woff",
+      "sha256": "377eaffaf00d2fe381870f08f098e3ad266618253c9d4197647b89816784e49c"
+    },
+    {
+      "path": "assets/manrope-cyrillic-500-normal-B1OEZity.woff2",
+      "sha256": "ab67a6d3a3fc134b74e966f10de67b1ae07c1c29fd7ebb6cb0705488f1128e22"
+    },
+    {
+      "path": "assets/manrope-cyrillic-500-normal-CNwnNrRC.woff",
+      "sha256": "5e86bae45417edeebd782a31adccfaa811e938fe93099cbe4b7991e7d74e0847"
+    },
+    {
+      "path": "assets/manrope-cyrillic-600-normal-DvRl3Mj-.woff2",
+      "sha256": "80b86efbef1c9fb66557cc4cc7b6db42db2fd631f1a9b8735f3bbefbb5128799"
+    },
+    {
+      "path": "assets/manrope-cyrillic-600-normal-It4mZcQk.woff",
+      "sha256": "716a12f36cf789e399e0ad0bd205e3d1c66e4de66fe0c7e94a59ab7f007fce89"
+    },
+    {
+      "path": "assets/manrope-cyrillic-700-normal-7JNVKxyl.woff",
+      "sha256": "64d81d2579261c073c8e7ed0964f7b1735707ac3afc6c60a49531918e1cb128f"
+    },
+    {
+      "path": "assets/manrope-cyrillic-700-normal-Dw_fZAg2.woff2",
+      "sha256": "2ad647b9159d27d27f4999b30598f92e60449fb20d80803bc7b85afafbb446d5"
+    },
+    {
+      "path": "assets/manrope-greek-400-normal-CM4qok81.woff2",
+      "sha256": "47f1b5621859a25df69ec1f1c7ed0ca3aadc3eccd1770c6e89cd5af06f1a0bf8"
+    },
+    {
+      "path": "assets/manrope-greek-400-normal-DuX9RsAR.woff",
+      "sha256": "b1ef144fe025cbadcfb7880bc611535586d7f45461e7add7305ea2ea9ccad6ed"
+    },
+    {
+      "path": "assets/manrope-greek-500-normal-DyxYGEtJ.woff",
+      "sha256": "5bb4928d86ca19d24b2b2fd9f2cb5e8080acad32ef5d6b2f9bf1abc1d65afa38"
+    },
+    {
+      "path": "assets/manrope-greek-500-normal-GeMIHyWm.woff2",
+      "sha256": "68c1619731941dd395b6b2c1ac05d2588815758eabcd5785cf579b10e9a94d27"
+    },
+    {
+      "path": "assets/manrope-greek-600-normal-BoRV6lzK.woff2",
+      "sha256": "18d69aa241a76095c4c5f8c224abe6519ff60db3b4085e843d59fb4965a4eebd"
+    },
+    {
+      "path": "assets/manrope-greek-600-normal-CF2i9ZRY.woff",
+      "sha256": "59fa49c299110657ee3dbc02beed32f5fda899423686058a0ce7e499851e6e7a"
+    },
+    {
+      "path": "assets/manrope-greek-700-normal-CHUG9PD8.woff2",
+      "sha256": "b37807fe106dc58c57642635ae7ea172abe65b380fea7b8894615a5883b26ec5"
+    },
+    {
+      "path": "assets/manrope-greek-700-normal-DyfsrCpP.woff",
+      "sha256": "caefb2ca9d80515325f901a72b5f3a88a6cb23b603a7aa2ed25e07133214aeb3"
+    },
+    {
+      "path": "assets/manrope-latin-400-normal-8tf8FM3T.woff",
+      "sha256": "1bf66c29a29f1b71d507cb97fc138cd130b856ed05b55decd3a2944b413cb636"
+    },
+    {
+      "path": "assets/manrope-latin-400-normal-PaqtzbVb.woff2",
+      "sha256": "849290ef12a2eeb9af5c11924120d11aa4ae8b435ed3347d7fc8bc240c293ca3"
+    },
+    {
+      "path": "assets/manrope-latin-500-normal-BYYD-dBL.woff2",
+      "sha256": "19874318747181a650eda439c37955220b849d9c4797c9e0718ee67d4bf929bc"
+    },
+    {
+      "path": "assets/manrope-latin-500-normal-DMZssgOp.woff",
+      "sha256": "c805ac8fd73fb95ddba74e624500c7d7d9a8ec6434d723bb6a9b76173c9e41b4"
+    },
+    {
+      "path": "assets/manrope-latin-600-normal-4f0koTD-.woff2",
+      "sha256": "f7ac6258da20ab7541939b59851155753d1d24f1b30cbcb949077a3faa3d1593"
+    },
+    {
+      "path": "assets/manrope-latin-600-normal-BqgrALkZ.woff",
+      "sha256": "8d1f509774bca963fa02faf674678ce9244474306361ca2798583fa600346df6"
+    },
+    {
+      "path": "assets/manrope-latin-700-normal-BZp_XxE4.woff2",
+      "sha256": "d2a12c85a831e4b5db341767d0347fa3d1361d22a1fcb3e361a16b6c90080f71"
+    },
+    {
+      "path": "assets/manrope-latin-700-normal-DGRFkw-m.woff",
+      "sha256": "e5d35fda4759b0d63ebcc6cca0627d98d9208254ce851c85df29e4d12aeafb61"
+    },
+    {
+      "path": "assets/manrope-latin-ext-400-normal-C-X6QNXX.woff",
+      "sha256": "143798f65cc631e6af5a77f0d34a2597bbef1ff1b24b73f6e6b12c2a79ebeb14"
+    },
+    {
+      "path": "assets/manrope-latin-ext-400-normal-CMDvPJRp.woff2",
+      "sha256": "72c5354a6f814f3bd38dc3d8caee774f7557b301e69d8428e677b7b73d58d9ee"
+    },
+    {
+      "path": "assets/manrope-latin-ext-500-normal-dm74KBQw.woff2",
+      "sha256": "40787d0c2ff6301cb60b504b6c7a2518c5e0104e6f0f5329c14536d6ed1b884d"
+    },
+    {
+      "path": "assets/manrope-latin-ext-500-normal-EtoS1VaI.woff",
+      "sha256": "f350e57f7de487eafb00f3dfc0ba0389670f929fe3c23d7ced337d94179291ac"
+    },
+    {
+      "path": "assets/manrope-latin-ext-600-normal-_gBojHdJ.woff2",
+      "sha256": "ff679412842fc3b5ce2dfad626db5261a4e663dcfd1bf1209bdfc61c2b2f37e6"
+    },
+    {
+      "path": "assets/manrope-latin-ext-600-normal-u5Pl7hTU.woff",
+      "sha256": "80ff78480448f4c2c0f586cb016928554b8cd84b2b95dec5e5f7579274f757a0"
+    },
+    {
+      "path": "assets/manrope-latin-ext-700-normal-DYOwVNan.woff2",
+      "sha256": "dc7c46d7eb269cc90650d7f70cf49aafa39a98444e6882cc84096acbc156bfcd"
+    },
+    {
+      "path": "assets/manrope-latin-ext-700-normal-eVCcYqtJ.woff",
+      "sha256": "b707ffc6454e54831a69d6c7db32d427b4a2bb914153c1f850fc4f888be7c35f"
+    },
+    {
+      "path": "assets/manrope-vietnamese-400-normal-D7E_mLGF.woff",
+      "sha256": "1d4631ba5036c35a61c5e342f06d4ffffab85ac0e800fda9e0ceff8ef19aebea"
+    },
+    {
+      "path": "assets/manrope-vietnamese-400-normal-DHb3EETF.woff2",
+      "sha256": "dcb0ae6367203b04f930051188cbe02e8096c42db99d5ab6b77f16287fb4fa1b"
+    },
+    {
+      "path": "assets/manrope-vietnamese-500-normal-DaZ8i3XM.woff",
+      "sha256": "969fa71a32335bd8c326fa00391d909d01498bfa2c67d0b182e859e5c079e737"
+    },
+    {
+      "path": "assets/manrope-vietnamese-500-normal-DCXiE_xi.woff2",
+      "sha256": "33f057ea61fa597818617de3b9f66a5a3955fc1b0047e17b0f4887a975c6c732"
+    },
+    {
+      "path": "assets/manrope-vietnamese-600-normal-C1J5PCl_.woff2",
+      "sha256": "bce46331a74572cd723ddb8200a11c00e71370fad490f045564989527469aa3d"
+    },
+    {
+      "path": "assets/manrope-vietnamese-600-normal-lA7a_7Ok.woff",
+      "sha256": "628a1c849748530c6f7c02c18bdd3191bc19264e20ad2308a8a954605cdb620b"
+    },
+    {
+      "path": "assets/manrope-vietnamese-700-normal-CUqMx5-1.woff2",
+      "sha256": "36c3f8e0a1c59e1bc2fd2a9cabab5b478b488882beebb534e4bd1a8360bf845b"
+    },
+    {
+      "path": "assets/manrope-vietnamese-700-normal-pt65Fn2Z.woff",
+      "sha256": "19bc9ab84376bb2f88eb858d4293c75dad965c70df7755d0a7f03d10080174b2"
+    },
+    {
+      "path": "assets/web-BCyEjJap.js",
+      "sha256": "02c510421986ec8a45dff3c501ec1d772d7088e87dcc4372a9f3efdcb9ca10fc"
+    },
+    {
+      "path": "demo-flood.svg",
+      "sha256": "2d9e310c69a8106f9ac54bb23b1eb9fa003edcc45df7eeaf550d1b7494f4eb06"
+    },
+    {
+      "path": "favicon.ico",
+      "sha256": "cb32a22f3b761051b07125c867f056aea89c85709bf23388d6a6acdf9ef95135"
+    },
+    {
+      "path": "favicon.svg",
+      "sha256": "d5a2f8b0cdeb2c1b5fcbdaa7840c2295b83837c1c971d01d71690aff8d4e9eab"
+    },
+    {
+      "path": "index.html",
+      "sha256": "a5ff9972b7d9702c56731a023e225b2db60c543ce71dab086c8910ad87e54ee2"
+    }
+  ],
+  "nearby_plugin_present": true,
+  "development_server_url": null,
+  "physical_installation_tested": true,
+  "physical_evidence": "docs/frontend-review-evidence/device-results.json"
+}

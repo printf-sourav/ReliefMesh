@@ -155,3 +155,16 @@ The user explicitly expanded scope after the original prototype freeze. Use `doc
 - [x] Stop owned 8001/5173/4173 processes and write `prompts/developer-1-continuation.md` with exact evidence/tooling/blockers/next steps; update handoff and save/push documentation checkpoint.
 - [ ] Developer 1: verify/deliver separate APK artifact, SHA-256 and source identity; install and execute all physical two-phone/native acceptance checks.
 - [ ] Developer 1: complete live frontend Hugging Face loop and final review PR/compare delivery, retaining honest limitations and no main merge/deployment.
+
+### Developer 1 continued delivery — 9 October 2026
+
+- [x] Save and push large-photo/canonical-Base64 fixes, issuing-origin receipts, changed-destination retention, save-time receipt guards and bounded peer-session retries; 62 frontend tests/typecheck/build/sync pass.
+- [x] Apply compatible dependency patches; runtime-only audit has zero reported vulnerabilities; document remaining three development-tool findings with review date.
+- [x] Final backend suite (36), nine browser scenarios and real four-source HTTP integration pass; one real frontend Hugging Face request and final live-source replay/real semantic runtime pass separately from fixtures.
+- [x] Rebuild/deliver separate APK with signature/app/SDK/native-plugin/47-asset checks, SHA-256 and committed source ac39a8b; final native five tests/lint/assembly pass, 0 errors/22 warnings.
+- [x] Install on the authorized Android 16 phone, reproduce/fix status 8033 missing Wi-Fi permission; verify actual discovery, foreground pause/resume, native picker cancel/Back and exact offline originals across force-close/reopen/APK update.
+- [x] Restore API over USB; automatic gateway sends one source without AI and removes device copy only after matching synced receipt.
+- [x] Create and attach draft PR #1; no main merge, force-push, deployment or release.
+- [ ] Obtain second Android phone and complete all actual authenticated peer transfer, interruptions/wrong-group/permissions/radios/conflict/storage-failure scenarios; third phone for tested multi-hop.
+- [ ] Complete native photo selection/camera and full keyboard/safe-area behavior checks; debug-input photo preservation is separately evidenced.
+- [ ] Accept full physical demonstration and merge only after owner review.

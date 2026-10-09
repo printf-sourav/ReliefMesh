@@ -28,6 +28,8 @@ cd android
 
 Expected generated file: `frontend/android/app/build/outputs/apk/debug/app-debug.apk`. Copy the final output to a user-accessible artifact path as `ReliefMesh-demo.apk`; include its absolute download link and checksum in the handoff. Source/config/build commands alone do not satisfy APK delivery. Preserve source if tooling is unavailable and report exactly what prevented the binary/device test; never pretend a responsive page is an APK.
 
+Current delivered artifact: `artifacts/ReliefMesh-demo.apk`, source `ac39a8b696137ac84aed17413a22e10c53bbe68b`, SHA-256 `8487c7a327982128f13bfea4c5093d6e1185835923c9b5199e9edec5fd8283c9`. Signature, identity/native plugin and 47 bundled files verify. Installation and single-phone offline/discovery/reconnect checks pass on Android 16; two-phone transfer remains pending. See [actual delivery evidence](integration-continuation-2026-10-09.md).
+
 ## Backend reachability
 
 The APK bundles the frontend, not Python, SQLite, or Gemma. Backend runs on the laptop or a reachable demo host. Browser desktop development uses a Vite API proxy; the APK needs `VITE_API_BASE_URL` or a validated user-editable demo API origin. Show a connection-test action and persist the chosen origin. Credentials stay on the backend.

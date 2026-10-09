@@ -63,3 +63,9 @@ The branch is reviewable with these limitations; full acceptance is incomplete. 
 ## Stopped and handed over
 
 Final browser/actual HTTP checks reran successfully on implementation commit `975fa80`, including exact recovered-photo bytes and original cleanup after replacement acknowledgment. Final APK packaging after web sync passed in 47s. At the user's request all frontend/test servers on 8001/5173/4173 were stopped. Developer 1's remaining-work prompt is `prompts/developer-1-continuation.md`; artifact/checksum, physical devices, live frontend inference and final review delivery remain open.
+
+## Current continued demo
+
+The historical live-provider/tooling/APK blockers above are superseded by [the verified continuation](integration-continuation-2026-10-09.md). A real frontend Hugging Face analyze/edit/save/review/verify loop passed with one explicit paid request and real semantic availability. Frontend 62/backend 36/native five tests, nine browser scenarios, actual HTTP integration, final build/lint/signature/47-assets checks pass. Corrected APK source is `ac39a8b`; the binary/checksum is delivered separately under `artifacts`. [Draft PR #1](https://github.com/printf-sourav/ReliefMesh/pull/1) is open for review.
+
+One physical Android 16 phone passes installation, discovery, foreground pause/resume, native picker cancellation/Back, exact offline source/photo after force-close/reopen/APK update, and automatic gateway reconnect with receipt-before-cleanup and one server UUID. The user currently has only one phone: peer transfer and its failure scenarios remain unverified. Native photo selection/camera/full keyboard checks remain open. Use the same-group instructions when a second phone is available; keep radios on and both apps foregrounded. Do not present one-phone discovery or simulated events as completed two-phone delivery.
