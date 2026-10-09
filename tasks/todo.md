@@ -136,6 +136,6 @@ The user explicitly expanded scope after the original prototype freeze. Use `doc
 ### Developer 2 review fixes and relay implementation
 
 - [x] Imported backend receipt extension c8f4d45, preserving completed frontend and backend checklist entries.
-- [ ] Reproduce and fix photo validation/inference races, operation timeouts and backend validation limits; add immutable rejected-source recovery.
+- [x] Reproduce and fix photo validation/inference races, operation timeouts and backend validation limits; add immutable rejected-source recovery. All three supplied regressions failed before fixes and pass now; 29 frontend tests/typecheck/build pass.
 - [ ] Implement and test native authenticated nearby sharing, durable packages/inboxes and foreground gateway delivery.
 - [ ] Recheck this host, build APK, verify live frontend loop and record physical two-phone outcomes separately.

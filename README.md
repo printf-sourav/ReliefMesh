@@ -1,5 +1,7 @@
 # ReliefMesh
 
+Frontend inference requests allow 120 seconds by default, aligned with the backend's default 90-second `RELIEFMESH_AI_TIMEOUT_SECONDS` plus upload/HTTP overhead. Set `VITE_ANALYSIS_TIMEOUT_MS` to the custom backend budget in milliseconds plus at least 30 seconds and rebuild when increasing that budget. Health uses 5 seconds, reads 15 seconds and uploads/mutations 60 seconds. An inference timeout retains the source and requires an explicit user decision before another paid analysis; transport never retries inference automatically.
+
 A local prototype for turning multilingual citizen reports with images into structured incidents for human responders.
 
 **Current status:** the responsive React reporting/review/queue UI, full FastAPI route set and Capacitor native source are integrated on `feature/frontend-demo`. Actual HTTP/SQLite/fixture-analysis flows pass. The backend handoff records a separate successful live Gemma smoke; full frontend live inference, real embedding availability, and Android APK/device acceptance remain incomplete. See the exact results in [frontend handoff](docs/frontend-handoff.md), [backend handoff](docs/backend-handoff.md), [demo checks](docs/demo.md), and [Android build status](docs/android-build.md).

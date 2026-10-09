@@ -12,8 +12,17 @@ export function AnalysisEditor({ value, onChange }: { value: IncidentAnalysis; o
   </div>;
 }
 export function cleanAnalysis(value: IncidentAnalysis): IncidentAnalysis {
-  if (!value.incident_type.trim() || !value.summary.trim() || !value.language.trim()) throw new Error('Incident type, summary and language are required.');
+  const cleaned = { ...value };
+  for (const key of ['incident_type','summary','language','location_context'] as const) {
+    cleaned[key] = value[key].trim();
+    if (!cleaned[key]) throw new Error(`${key.replaceAll('_',' ')} is required.`);
+    if (Array.from(cleaned[key]).length > 10000) throw new Error(`${key.replaceAll('_',' ')} must be at most 10,000 characters.`);
+  }
+  for (const key of ['vulnerable_people','reported_needs','image_observations'] as const) {
+    cleaned[key] = value[key].map(x => x.trim()).filter(Boolean);
+    if (cleaned[key].some(x => Array.from(x).length > 10000)) throw new Error('Each analysis list item must be at most 10,000 characters.');
+  }
   if (value.people_affected !== null && (!Number.isInteger(value.people_affected) || value.people_affected < 0)) throw new Error('Reported people must be a whole nonnegative number or unknown.');
   if (value.confidence !== null && (!Number.isFinite(value.confidence) || value.confidence < 0 || value.confidence > 1)) throw new Error('Confidence must be between 0 and 1, or unknown.');
-  return { ...value, vulnerable_people:value.vulnerable_people.map(x => x.trim()).filter(Boolean), reported_needs:value.reported_needs.map(x => x.trim()).filter(Boolean), image_observations:value.image_observations.map(x => x.trim()).filter(Boolean), verification_required:true };
+  return { ...cleaned, verification_required:true };
 }

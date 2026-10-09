@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CloudUpload, Database, Radio, RefreshCw, Smartphone, Wifi, WifiOff } from 'lucide-react';
 import { useConnection } from '../App';
 import { Button } from '../components/ui/button';
 import { SourcePhoto } from '../components/source-photo';
 import { api, allPages } from '../lib/api';
 import type { IncidentRecord } from '../lib/api-types';
-import { deliverQueue, listQueued, type QueueItem } from '../lib/queue';
+import { deliverQueue, listQueued, recoverRejected, type QueueItem } from '../lib/queue';
+import { Dialog, DialogContent, DialogTrigger } from '../components/ui/dialog';
 import { date, message, timeZone } from '../lib/utils';
 export default function QueuePage() {
   const { online,setOnline,refresh,changed } = useConnection(); const [device,setDevice] = useState<QueueItem[]>([]); const [backend,setBackend] = useState<IncidentRecord[]>([]);
@@ -34,11 +35,25 @@ export default function QueuePage() {
     {error && <div className="error" role="alert">{error}</div>}{notice && <div className="notice" role="status">{notice}</div>}
     <div className="queue-layout"><section className="panel"><div className="queue-section-heading"><div><Smartphone size={20}/><h2>On this device</h2></div><span className="badge amber">{deviceError ? 'Unknown' : device.length} pending</span></div><p className="muted">Saved in this browser or app. Failed and timed-out uploads stay here until the API acknowledges the same UUID.</p>
       {deviceError ? <div className="error" role="alert">{deviceError}</div> : loading ? <p role="status">Reading saved reports…</p> : device.length ? device.map(item => <div className="queue-item" key={item.client_report_id}><QueuedPhoto image={item.image}/><div><h3>{item.location}</h3><p>{item.original_text}</p><span className="badge amber">{item.analysis_result ? `${item.analysis_result.analysis_mode} analysis saved` : 'Analysis pending'}</span><small>{date(item.created_at)} · {timeZone()}</small><small>{item.attempts ? `${item.attempts} unsuccessful attempts` : 'Waiting for upload'} · ID {item.client_report_id.slice(0,8)}</small>{item.last_error && <div className="queue-last-error">{item.last_error}</div>}</div></div>) : <div className="queue-empty"><Smartphone size={29}/><h3>No reports waiting on this device.</h3><p>Reports saved while the API is unreachable will appear here.</p></div>}
+      {device.filter(item=>item.rejected).map(item=><Recovery key={item.client_report_id} item={item} onSaved={()=>{changed();setVersion(n=>n+1);}}/>)}
       <Button disabled={busy || !!deviceError} onClick={sync}><CloudUpload size={17}/>{busy ? 'Synchronizing…' : 'Retry device uploads & sync'}</Button>
     </section><section className="panel"><div className="queue-section-heading"><div><Database size={20}/><h2>On the backend</h2></div><span className="badge amber">{backendError ? 'Unknown' : backend.length} pending</span></div><p className="muted">SQLite sources waiting for simulated hub delivery. This count excludes device-only reports.</p>
       {backendError ? <div className="error" role="alert">{backendError}</div> : loading ? <p role="status">Reading backend queue…</p> : backend.length ? backend.map(source => <div className="queue-item" key={source.id}><SourcePhoto id={source.id} location={source.location}/><div><h3>{source.location}</h3><p>{source.analysis?.summary ?? source.original_text}</p><span className="badge amber">{source.analysis_mode === 'deferred' ? 'Analysis pending' : `${source.analysis_mode} analysis`}</span><small>{date(source.created_at)}</small><small>Saved on backend · ID {source.client_report_id.slice(0,8)}</small></div></div>) : <div className="queue-empty"><Radio size={29}/><h3>Backend queue is clear.</h3><p>Transport-offline submissions wait here until you synchronize.</p></div>}
       <p className="small-note">Sync only changes delivery state. Deferred sources require explicit analysis and human review afterward. No peer mesh or background-delivery guarantee.</p>
     </section></div></>;
+}
+function Recovery({item,onSaved}:{item:QueueItem;onSaved:()=>void}) {
+  const [text,setText]=useState(item.original_text), [location,setLocation]=useState(item.location), [photo,setPhoto]=useState<File|null>(null);
+  const [error,setError]=useState(''), [busy,setBusy]=useState(false), [done,setDone]=useState(false); const guard=useRef(false);
+  async function recover() {
+    if (guard.current) return; guard.current=true;setBusy(true);setError('');
+    try {await recoverRejected(item.client_report_id,{original_text:text,location,image:photo??item.image,image_name:photo?.name??item.image_name,image_mime:photo?.type??item.image_mime});setDone(true);onSaved();}
+    catch(error){setError(message(error));}finally{guard.current=false;setBusy(false);}
+  }
+  return <div className="queue-last-error"><strong>{item.location}: needs recovery</strong><p>Automatic retries are paused. The original photo/source stays saved until the replacement is API-confirmed.</p>
+    {item.superseded_by ? <p>Replacement saved · {item.superseded_by.slice(0,8)}. Original retained.</p> : <Dialog><DialogTrigger asChild><Button variant="outline">Recover rejected report</Button></DialogTrigger><DialogContent title="Recover saved source" description="Save a corrected copy with a new report ID. Previous AI output is cleared because the source changes.">
+      {done ? <p role="status">Replacement saved; original retained until successful upload.</p> : <><fieldset disabled={busy}><label>Description<textarea value={text} onChange={e=>setText(e.target.value)}/></label><label>Location<input value={location} onChange={e=>setLocation(e.target.value)}/></label><label>Replacement photo (optional)<input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>setPhoto(e.target.files?.[0]??null)}/></label><p className="muted">Keep {item.image_name} unless it needs resizing or replacement.</p></fieldset>{error&&<p className="error" role="alert">{error}</p>}<Button disabled={busy} onClick={recover}>{busy?'Validating & saving…':'Save replacement with new ID'}</Button></>}
+    </DialogContent></Dialog>}</div>;
 }
 function QueuedPhoto({ image }: { image: Blob }) {
   const [url,setUrl] = useState('');

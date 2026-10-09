@@ -17,15 +17,21 @@ export function validateOrigin(value: string): string {
 export function getOrigin() { return localStorage.getItem(overrideKey) ?? import.meta.env.VITE_API_BASE_URL ?? ''; }
 export function setOrigin(value: string) { localStorage.setItem(overrideKey, validateOrigin(value)); }
 export function imageUrl(id: string) { return `${getOrigin()}/api/v1/reports/${encodeURIComponent(id)}/image`; }
-async function request<T>(path: string, init?: RequestInit, inspectHeaders?: (headers: Headers) => void): Promise<T> {
+const configuredAnalysisTimeout = Number(import.meta.env.VITE_ANALYSIS_TIMEOUT_MS);
+export const analysisTimeout = Number.isFinite(configuredAnalysisTimeout) && configuredAnalysisTimeout >= 1000 ? configuredAnalysisTimeout : 120000;
+async function request<T>(path: string, init?: RequestInit, inspectHeaders?: (headers: Headers) => void, timeoutMs = init?.method ? 60000 : 15000): Promise<T> {
   if (fixturesEnabled) {
     const { mockRequest } = await import('../mocks/transport');
     return mockRequest<T>(path, init);
   }
   if (Capacitor.isNativePlatform() && !getOrigin()) throw new ApiError('API_UNREACHABLE', 'Set a reachable backend address in Connection settings.');
   let response: Response;
-  try { response = await fetch(`${getOrigin()}/api/v1${path}`, { ...init, signal: AbortSignal.timeout(60000) }); }
-  catch { throw new ApiError('API_UNREACHABLE', 'The API could not be reached, or the request timed out. Retry with the same saved report.'); }
+  const signal = AbortSignal.timeout(timeoutMs);
+  try { response = await fetch(`${getOrigin()}/api/v1${path}`, { ...init, signal }); }
+  catch {
+    if (signal.aborted) throw new ApiError('REQUEST_TIMEOUT', `The request timed out after ${timeoutMs / 1000} seconds. Your source is retained. Analysis may still be running on the backend; check before explicitly analyzing again.`);
+    throw new ApiError('API_UNREACHABLE', 'The API could not be reached. Saved reports remain on this device for retry.');
+  }
   let body: unknown;
   try { body = await response.json(); } catch { throw new ApiError('INVALID_RESPONSE', 'The API returned an unreadable response. Delivery is unconfirmed.', response.status); }
   if (!response.ok) {
@@ -48,8 +54,8 @@ export function multipart(draft: Draft, extra: object = {}): FormData {
   return data;
 }
 export const api = {
-  health: () => request<Health>('/health'),
-  analyze: (draft: Draft) => request<AnalysisResult>('/analyses', { method: 'POST', body: multipart(draft) }),
+  health: () => request<Health>('/health', undefined, undefined, 5000),
+  analyze: (draft: Draft) => request<AnalysisResult>('/analyses', { method: 'POST', body: multipart(draft) }, undefined, analysisTimeout),
   create: (draft: Submission, network_online: boolean) => {
     const { analysis_result, edited_analysis, ...source } = draft;
     return request<IncidentRecord>('/reports', { method: 'POST', body: multipart(source, { analysis_result, edited_analysis, network_online }) });
@@ -70,7 +76,7 @@ export const api = {
   },
   duplicates: (id: string) => request<DuplicatePage>(`/reports/${encodeURIComponent(id)}/duplicates?synced_only=true&offset=0&limit=100`),
   correct: (id: string, analysis: IncidentAnalysis) => request<IncidentRecord>(`/reports/${encodeURIComponent(id)}/analysis`, json('PATCH', { analysis })),
-  reanalyze: (id: string) => request<IncidentRecord>(`/reports/${encodeURIComponent(id)}/analyses`, { method: 'POST' }),
+  reanalyze: (id: string) => request<IncidentRecord>(`/reports/${encodeURIComponent(id)}/analyses`, { method: 'POST' }, undefined, analysisTimeout),
   verify: (id: string) => request<IncidentRecord>(`/reports/${encodeURIComponent(id)}/verifications`, { method: 'POST' }),
   link: (id: string, target_cluster_id: string) => request<IncidentRecord>(`/reports/${encodeURIComponent(id)}/cluster-membership`, json('PUT', { target_cluster_id })),
   separate: (id: string) => request<IncidentRecord>(`/reports/${encodeURIComponent(id)}/cluster-membership`, { method: 'DELETE' }),
