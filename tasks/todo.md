@@ -123,3 +123,19 @@ Files: README, demo/frontend/Android handoffs, sample images, integration checks
 - [x] Reported blockers and next action: missing Java/SDK/adb/device prevents APK; local 8000 is an unrelated API, so configure a separate ReliefMesh port/provider for live UI acceptance. PR connector returns 403; pushed compare view supplied.
 - [ ] APK binary/checksum/install and native scenario E completed.
 - [ ] Frontend genuine live-provider loop and final-runtime semantic availability verified.
+
+## Authorized extension - Automatic nearby relay
+
+The user explicitly expanded scope after the original prototype freeze. Use `docs/nearby-relay.md` and `prompts/nearby-relay-frontend.md`; existing completed tasks remain intact.
+
+- [x] Developer 1: typed receipt lookup and relay retry/conflict/provenance/restart tests; 36 backend tests pass and live receipt route checked.
+- [x] Developer 1: publish automatic Nearby protocol/frontend-native handoff and a recheck of frontend build, 12 tests and real browser HTTP/queue flow.
+- [ ] Developer 2: merge the complete backend; add native Nearby plugin/group authentication/automatic accept and foreground transfer, durable relay storage, receipts and nearby UI.
+- [ ] Developer 2: build APK and prove automatic two-phone photo/report relay, interrupted-transfer recovery and one server source after gateway/origin retries.
+
+### Developer 2 review fixes and relay implementation
+
+- [x] Imported backend receipt extension c8f4d45, preserving completed frontend and backend checklist entries.
+- [ ] Reproduce and fix photo validation/inference races, operation timeouts and backend validation limits; add immutable rejected-source recovery.
+- [ ] Implement and test native authenticated nearby sharing, durable packages/inboxes and foreground gateway delivery.
+- [ ] Recheck this host, build APK, verify live frontend loop and record physical two-phone outcomes separately.

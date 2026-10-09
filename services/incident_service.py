@@ -10,7 +10,7 @@ from pydantic import ValidationError as ModelValidationError
 from database.db import connection
 from utils.config import settings
 from utils.schemas import (
-    AnalysisResult, ClusterSummary, ConflictError, DashboardMetrics, DuplicateCandidate,
+    AnalysisResult, ClusterSummary, ConflictError, DashboardMetrics, DeliveryReceipt, DuplicateCandidate,
     IncidentAnalysis, IncidentRecord, MatchingUnavailableError, NotFoundError, ReportDraft, ValidationError,
 )
 
@@ -115,6 +115,17 @@ def list_reports(*, synced_only: bool = False) -> list[IncidentRecord]:
 def get_report(report_id: str) -> IncidentRecord:
     with connection() as conn:
         return _get(conn, report_id)
+
+
+def get_delivery_receipt(client_report_id: str) -> DeliveryReceipt:
+    """Look up durable API acceptance by the originating phone's stable UUID."""
+    with connection() as conn:
+        row = conn.execute("SELECT id, client_report_id, created_at, sync_status FROM reports WHERE client_report_id=?",
+                           (client_report_id,)).fetchone()
+        if row is None:
+            raise NotFoundError("No delivery receipt exists for this report UUID.")
+        return DeliveryReceipt(client_report_id=row["client_report_id"], report_id=row["id"],
+                               accepted_at=row["created_at"], sync_status=row["sync_status"])
 
 
 def get_cluster_reports(cluster_id: str) -> list[IncidentRecord]:
