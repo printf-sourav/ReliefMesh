@@ -7,10 +7,10 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, ValidationError as ModelValidationError
 from starlette.concurrency import run_in_threadpool
 
-from services import incident_service
+from services import gemma_service, incident_service
 from utils.config import settings
 from utils.schemas import (
-    MAX_IMAGE_BYTES, CreateMetadata, ImageTooLargeError, IncidentRecord,
+    MAX_IMAGE_BYTES, AnalysisResult, CreateMetadata, ImageTooLargeError, IncidentRecord,
     NotFoundError, Page, ReportDraft, ReportMetadata, ValidationError,
 )
 
@@ -57,6 +57,12 @@ async def submit_report(response: Response, image: Annotated[UploadFile, File()]
                                             edited_analysis=values.edited_analysis)
     response.status_code = 201 if created else 200
     return record
+
+
+@router.post("/analyses", response_model=AnalysisResult)
+async def analyze(image: Annotated[UploadFile, File()], metadata: Annotated[str, Form()]):
+    draft, _ = await read_draft(image, metadata, ReportMetadata)
+    return await run_in_threadpool(gemma_service.analyze_report, draft)
 
 
 @router.get("/reports", response_model=Page[IncidentRecord])
