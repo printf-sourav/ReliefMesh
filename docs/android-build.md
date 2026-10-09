@@ -4,7 +4,7 @@ The debug APK now builds. Earlier missing-Java/SDK results in the chronological 
 
 ## Toolchain and reproduction
 
-App ID `org.reliefmesh.app`, version `1.0`/code `1`; Capacitor core/CLI/Android `7.4.3`, App plugin `7.0.1`, JDK 21, Android compile/target SDK 35 and minSdk 23. The Gradle wrapper uses 8.11.1 with AGP 8.7.2. Nearby Connections is pinned to `19.3.0`: Google's AAR manifest supports minSdk 21. The first build with `19.5.1` failed manifest merging because that library requires minSdk 24; no overrideLibrary or minimum-version bypass was used.
+App ID `org.reliefmesh.app`, version `1.0`/code `1`; Capacitor core/CLI/Android `7.6.9`, App plugin `7.0.1`, JDK 21, Android compile/target SDK 35 and minSdk 23. The Gradle wrapper uses 8.11.1 with AGP 8.7.2. Nearby Connections is pinned to `19.3.0`: Google's AAR manifest supports minSdk 21. The first build with `19.5.1` failed manifest merging because that library requires minSdk 24; no overrideLibrary or minimum-version bypass was used. The compatible Capacitor patch and remaining development-tool audit are documented in [dependency review](dependency-review-2026-10-09.md).
 
 This host uses checksum-verified Temurin JDK `21.0.12.1+1` and official Google SDK command-line tools in ignored `.cache/android-tools`. Platform 35, build-tools 35.0.0 and platform-tools were installed; AGP also installed its default build-tools 34.0.0. Set `JAVA_HOME` to a JDK 21 installation, `ANDROID_HOME`/`ANDROID_SDK_ROOT` to an SDK containing platform 35, and add their executable directories to PATH. Machine paths, SDK downloads, licenses, caches, keys and build outputs are excluded from Git.
 
