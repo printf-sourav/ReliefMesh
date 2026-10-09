@@ -1,0 +1,17 @@
+import type { Draft } from './api-types';
+export function validateDraft(draft: Draft) {
+  if (!draft.original_text.trim()) throw new Error('Describe what happened.');
+  if (!draft.location.trim()) throw new Error('Add a location people can recognize.');
+  if (!draft.image.size) throw new Error('Add an incident photo.');
+  if (draft.latitude !== null && (!Number.isFinite(draft.latitude) || Math.abs(draft.latitude) > 90)) throw new Error('Latitude must be between −90 and 90.');
+  if (draft.longitude !== null && (!Number.isFinite(draft.longitude) || Math.abs(draft.longitude) > 180)) throw new Error('Longitude must be between −180 and 180.');
+}
+export async function validateImage(file: File) {
+  if (!['image/jpeg','image/png','image/webp'].includes(file.type)) throw new Error('Choose a JPEG, PNG or WebP image.');
+  if (file.size > 10 * 1024 * 1024) throw new Error('The photo must be 10 MB or smaller.');
+  if (!file.size) throw new Error('The photo is empty.');
+  const url = URL.createObjectURL(file);
+  try {
+    await new Promise<void>((resolve,reject) => { const image = new Image(); image.onload = () => image.naturalWidth && image.naturalHeight ? resolve() : reject(new Error('The photo cannot be decoded.')); image.onerror = () => reject(new Error('The photo cannot be decoded.')); image.src = url; });
+  } finally { URL.revokeObjectURL(url); }
+}

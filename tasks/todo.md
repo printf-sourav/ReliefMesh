@@ -31,14 +31,14 @@ Files: Gemma service, config/requirements, analysis tests. Dependencies: B1/B2. 
 Files: frontend package/config, app shell/styles, API client/types. Dependencies: contract/design brief. Scope: separate shell/config and API-client increments.
 
 - [ ] React/TypeScript/Tailwind/shadcn and tokens implement desktop/phone design direction.
-- [ ] Typed HTTP client, labelled opt-in mocks, browser proxy and APK API setting follow contract.
+- [x] Typed HTTP client, labelled opt-in mocks, browser proxy and APK API setting follow contract. Checkpoint 1: typed client and settings implemented; health fixture only; live contract validation pending.
 - [ ] Verify typecheck/build, navigation and 320/390/768/1440px layouts.
 
 ## U2 - Early Android package (Developer 2)
 
 Files: Capacitor config, Android source/wrapper, npm scripts, frontend env. Dependencies: U1 minimal shell. Scope: generated native project plus focused config.
 
-- [ ] Verify SDK/JDK/Node/Capacitor by 0:25; build minimal APK by 0:45 or record concrete blocker.
+- [x] Verify SDK/JDK/Node/Capacitor by 0:25; build minimal APK by 0:45 or record concrete blocker. Node 24/Capacitor 7 work; Gradle exits 1 because JAVA_HOME/java is missing; SDK/adb unavailable. No APK built.
 - [ ] Bundled app opens without Vite server; routing/name/ID and API reachability are correct.
 - [ ] Record Gradle output separately from actual emulator/device installation/launch.
 

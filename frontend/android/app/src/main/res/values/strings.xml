@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ReliefMesh</string>
+    <string name="title_activity_main">ReliefMesh</string>
+    <string name="package_name">org.reliefmesh.app</string>
+    <string name="custom_url_scheme">org.reliefmesh.app</string>
+</resources>

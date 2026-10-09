@@ -1,0 +1,22 @@
+# Frontend handoff — Developer 2
+
+Branch: `feature/frontend-demo`. Isolated checkout: `.worktrees/frontend` beneath the original checkout. Baseline: `6d92ac6` (React/Android planning revision). Do not edit the primary `main` checkout.
+
+## Checkpoint 1 — 9 October 2026
+
+Implemented the React/TypeScript/Vite/Tailwind shell, bundled Manrope, Radix-based shadcn Button/Dialog, desktop sidebar/mobile hash navigation, explicit API settings, typed contract client, multipart transport and IndexedDB queue. Fixture mode is opt-in and development-only; real HTTP is the default. Queue transaction completion precedes saved feedback; deletion requires a matching server UUID; concurrent retries share one operation. Citizen form/editor source is in progress and not connected to routing yet.
+
+Actual validation:
+
+- Node `v24.19.0`; pinned dependencies installed with npm `10.9.3` via bundled pnpm launcher. npm lockfile committed.
+- `tsc --noEmit`: passed. `vite build`: passed (1,662 modules, 16.58 seconds).
+- Multipart/origin tests: 2 passed. Queue tests: initially 3 passed/1 failed because jsdom Blob cannot be cloned by Node structuredClone; switched the fixture Blob to Node's cloneable Blob. Rerun: 4 passed. Actual browser Blob/restart checks remain pending.
+- `cap add android`: passed with Capacitor `7.4.3` and App `7.0.1`. Native source/wrapper retained; compiled assets/builds excluded.
+- `gradlew.bat assembleDebug`: exit 1, `ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.` Java/adb absent from PATH; no SDK environment settings or Android installation found in usual locations. No APK exists and no device testing has occurred.
+- Browser layout/keyboard checks, live HTTP, live Gemma and backend integration have not run. Origin currently exposes only `main`; backend handoff is unavailable.
+
+Setup: `cd frontend; npm ci; npm run dev`. Browser `/api` proxies to `http://127.0.0.1:8000`. APK requires a reachable origin in Connection settings or `VITE_API_BASE_URL`; no credentials in frontend variables. `npm run build; npx cap sync android; cd android; .\gradlew.bat assembleDebug` after installing a compatible JDK/Android SDK.
+
+Next: connect/report and review screens, full fixture transport, queue controls, focused form tests and real browser checks. Then fetch backend handoff and integrate when available. Keep missing live-AI/APK evidence explicit.
+
+Commit/push result is recorded by the working chat after this checkpoint; use `git log -1` for its exact hash.
