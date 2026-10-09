@@ -1,90 +1,117 @@
 # Build tasks and acceptance checklist
 
-The unchecked entries are implementation work for the two future Codex chats, not work claimed complete by the planning commit. Each developer updates only their assigned tasks. Use temporary databases for automated checks.
+This React/FastAPI/Android revision replaces the earlier Streamlit plan for the same prototype. Each developer updates only assigned entries. Reconcile any already-completed work from existing branches rather than discarding it. Follow [progress checkpoints](../prompts/progress-checkpoint.md) throughout.
 
-## B1 - Backend foundation (Developer 1)
+## B1 - Persistence foundation (Developer 1)
 
-Files: `utils/schemas.py`, `database/db.py`, `services/incident_service.py`, `requirements-backend.txt`, `.gitignore`. Dependencies: shared contract. Scope: medium.
+Files: schemas, DB, incident service, backend requirements, gitignore. Dependencies: contract. Scope: medium.
 
-- [ ] Validated shared models and public exceptions implement the exact contract.
-- [ ] Init/create/list/get use SQLite and durable image storage; retrying a UUID returns one source record.
-- [ ] Verify temporary-DB persistence after reopening, invalid inputs, and retry behavior.
+- [ ] Validated shared models and SQLite init/create/list/get with image storage work.
+- [ ] Atomic UUID replay/conflict handling preserves original output and initial edits together.
+- [ ] Verify restart, invalid inputs, same/changed payload retries and file cleanup on failure.
 
-## B2 - Genuine multimodal analysis (Developer 1)
+## B2 - FastAPI boundary (Developer 1)
 
-Files: `services/gemma_service.py`, `.env.example`, backend requirements, `tests/backend/test_analysis.py`. Dependencies: B1 types. Scope: medium.
+Files: API main/routes, root requirements/env, API tests. Dependencies: B1. Scope: medium.
 
-- [ ] Verify the required Gemma version/runtime with official docs; actual text and image both reach live inference.
-- [ ] Validate output; preserve unknowns and force human review; fixture provenance is explicit.
-- [ ] Verify malformed JSON/provider failures and a genuine image + Hinglish smoke example; record hardware/runtime and outcome.
+- [ ] Multipart routes, JSON/error envelopes, pagination, health/OpenAPI are available early.
+- [ ] Safe image-by-ID route and explicit browser/Android origins work.
+- [ ] Verify metadata, errors, CORS, pagination and invalid/oversized images with TestClient/httpx.
 
-## U1 - Citizen workflow (Developer 2)
+## B3 - Genuine multimodal analysis (Developer 1)
 
-Files: `app.py`, `pages/citizen.py`, `ui/dev_fixtures.py`, `requirements-ui.txt`, `requirements.txt`. Dependencies: contract; B1/B2 for live connection. Scope: medium.
+Files: Gemma service, config/requirements, analysis tests. Dependencies: B1/B2. Scope: medium.
 
-- [ ] Required inputs, image preview, validation, editable structured analysis, and separate Analyze/Submit steps work.
-- [ ] Draft UUID is stable through reruns/retries; edits do not overwrite original AI output or provenance.
-- [ ] Verify fixture flow first, then live Analyze/Submit; edited input invalidates stale analysis.
+- [ ] Verify required model/runtime; actual image and text reach inference; unknowns stay unknown.
+- [ ] Explicit live/fixture/deferred provenance, originals and saved-source reanalysis are supported.
+- [ ] Verify provider/malformed errors and genuine Hinglish/image smoke; record actual model/runtime/outcome.
 
-## Checkpoint 1 - First live source (both)
+## U1 - React shell and design (Developer 2)
 
-- [ ] By 1:15, align shapes and connect a genuine multimodal result to a saved report; disclose any model blocker.
+Files: frontend package/config, app shell/styles, API client/types. Dependencies: contract/design brief. Scope: separate shell/config and API-client increments.
 
-## B3 - Duplicate suggestions and grouping (Developer 1)
+- [ ] React/TypeScript/Tailwind/shadcn and tokens implement desktop/phone design direction.
+- [ ] Typed HTTP client, labelled opt-in mocks, browser proxy and APK API setting follow contract.
+- [ ] Verify typecheck/build, navigation and 320/390/768/1440px layouts.
 
-Files: `services/embedding_service.py`, incident service, DB module, `tests/backend/test_duplicates.py`. Dependencies: B1/B2. Scope: medium.
+## U2 - Early Android package (Developer 2)
 
-- [ ] Cached embeddings and cosine similarity produce location-aware suggestions; unavailable matching is disclosed.
-- [ ] Reports group only after confirmation; separation/dismissal preserves sources and avoids recurring rejected suggestions.
-- [ ] Verify similar paraphrases suggest a match, distant/unrelated reports do not, and creation never auto-merges.
+Files: Capacitor config, Android source/wrapper, npm scripts, frontend env. Dependencies: U1 minimal shell. Scope: generated native project plus focused config.
 
-## U2 - Responder inspection (Developer 2)
+- [ ] Verify SDK/JDK/Node/Capacitor by 0:25; build minimal APK by 0:45 or record concrete blocker.
+- [ ] Bundled app opens without Vite server; routing/name/ID and API reachability are correct.
+- [ ] Record Gradle output separately from actual emulator/device installation/launch.
 
-Files: `pages/responder.py`, `ui/components.py`, `tests/ui/test_responder.py`. Dependencies: contract; B1/B3 for live connection. Scope: medium.
+## U3 - Citizen report (Developer 2)
 
-- [ ] Metrics, cluster list, detail, source text/photos, needs/languages, and per-source people counts render.
-- [ ] Pending local sources are distinguished from simulated delivered hub records; loading/empty/error states are clear.
-- [ ] Verify unknown people stay unknown, source overlap is not summed, and live records survive app restart.
+Files: report page, form components, API client, form tests. Dependencies: U1; B2/B3 for live flow. Scope: medium.
 
-## B4 - Review and simulated sync (Developer 1)
+- [ ] Required inputs, image picker/preview, optional coordinates, editable analysis and Submit work.
+- [ ] Stable UUID survives retry; changed source invalidates stale output; original/edited analyses remain separate.
+- [ ] Verify invalid input, double-click/timeout, picker cancel, provenance and live multipart requests.
 
-Files: incident service, `services/sync_service.py`, DB module, `tests/backend/test_sync_review.py`. Dependencies: B1/B3. Scope: medium.
+## Checkpoint 1 - First live API report (both)
 
-- [ ] Corrections retain original output; verification resets on correction; pending queue survives restart.
-- [ ] Offline sync does nothing; online sync delivers each pending UUID once and leaves deferred analysis honest.
-- [ ] Verify repeated sync/retry, corrections, mixed-state cluster aggregation, and new sources in verified groups.
+- [ ] By 1:15 connect genuine text/image inference to persisted source, or report model blocker.
+- [ ] Developer 2 records early APK build outcome before extensive polish.
+- [ ] Both update handoff/checklist, commit progress and push owned branches.
 
-## U3 - Review controls and transport demo (Developer 2)
+## B4 - Duplicate suggestions and grouping (Developer 1)
 
-Files: citizen/responder pages, app entry point, UI components. Dependencies: U1/U2 and B3/B4. Scope: medium.
+Files: embedding/incident services, DB, duplicate tests. Dependencies: B1/B3. Scope: medium.
 
-- [ ] Confirm grouping, keep separate, correct, and verify actions call the shared services.
-- [ ] Simulated transport toggle displays pending count, delivery feedback, and live/fixture/deferred labels.
-- [ ] Verify offline submission -> restart -> restore -> dashboard -> human review with real services.
+- [ ] Cached/persisted embeddings yield location-aware suggestions; unavailable matching is disclosed.
+- [ ] Human grouping/separation preserves sources/dismissals and avoids summing people.
+- [ ] Verify related/unrelated cases, no automatic merge and repeat-safe membership.
+
+## U4 - Dashboard and review (Developer 2)
+
+Files: dashboard/detail pages, components, API client, review tests. Dependencies: U1; B2/B4 for live flow. Scope: separate list/detail and control increments.
+
+- [ ] Polished desktop/phone metrics, sources/photos, needs, language, dates and per-source counts render.
+- [ ] Human grouping, separate, correction, deferred analysis and verification call real routes.
+- [ ] Verify states, hub filtering, keyboard/focus, touch and source inspection.
+
+## B5 - Review integrity and sync (Developer 1)
+
+Files: incident/sync services, routes, DB, sync/review tests. Dependencies: B1-B4. Scope: medium.
+
+- [ ] Corrections preserve originals/reset verification; deferred sources need analysis before verification.
+- [ ] SQLite queue survives restart; repeated sync delivers once; reconnect accepts raw deferred phone uploads.
+- [ ] Verify changed-network retries, offline no-op, mixed hub counts and deferred reanalysis.
+
+## U5 - Device queue and phone behavior (Developer 2)
+
+Files: queue storage/service/page, transport adapter, queue tests, Android config. Dependencies: U2/U3, B2/B5. Scope: separate storage/retry and native finish increments.
+
+- [ ] IndexedDB commits UUID/text/location/image Blob/result/edits and handles quota errors.
+- [ ] Device/server pending states differ; acknowledgment-before-dequeue and retries create one source.
+- [ ] Verify APK cold start, picker/keyboard/safe-area/Back, unreachable-API save, force-close/reopen and reconnect.
 
 ## Checkpoint 2 - Branch handoff by 3:25 (both)
 
-- [ ] Developer 1: backend tests pass; push branch with signatures, setup, live model evidence and blockers in backend handoff.
-- [ ] Developer 2: fixture UI is demonstrable; commit frontend before integrating backend; preserve both task updates.
+- [ ] Developer 1 tests pass; pushed backend handoff includes OpenAPI/examples/setup/live-model evidence.
+- [ ] Developer 2 has web/phone fixture screens, durable queue and populated APK; commit before merge.
+- [ ] Both preserve/commit progress and push branch checkpoints.
 
-## B5 - Backend reproducibility (Developer 1)
+## B6 - Backend reproducibility (Developer 1)
 
-Files: `docs/backend-handoff.md`, `sample_data/demo_reports.json`, backend tests/requirements. Dependencies: B1-B4. Scope: medium.
+Files: handoff, sample report JSON, tests/requirements. Dependencies: B1-B5. Scope: medium.
 
-- [ ] Document exact dependency/runtime configuration, inference/embedding model IDs, setup commands, and mode limitations.
-- [ ] Include illustrative A-C source reports and focused service smoke commands without secrets or real personal data.
-- [ ] Verify from clean temporary storage and hand off the pushed branch commit.
+- [ ] Document models/runtime, install/start/CORS/env, multipart examples and actual test results.
+- [ ] Include illustrative A-C reports and disposable seed setup without personal data/secrets.
+- [ ] Verify clean temporary storage and give exact pushed handoff commit.
 
-## U4 - Integration and demo package (Developer 2)
+## U6 - Integrated web/APK delivery (Developer 2)
 
-Files: `README.md`, `docs/demo.md`, `docs/frontend-handoff.md`, `sample_data/images/**`, `tests/ui/test_flow.py`. Dependencies: B5, U1-U3. Scope: medium.
+Files: README, demo/frontend/Android handoffs, sample images, integration checks. Dependencies: B6/U1-U5. Scope: separate validation and documentation/artifact increments.
 
-- [ ] Integrate backend branch, remove default fixture wiring, and document one reproducible install/run path and asset provenance.
-- [ ] Run full A-D acceptance flow, offline persistence, repeated sync, human grouping and correction/verification checks.
-- [ ] Publish both developer branches and final integration PR/compare link with test outcomes and explicit remaining limitations.
+- [ ] Merge backend; default uses real HTTP; document frontend/backend/API-origin setup.
+- [ ] Verify A-E and screenshots, typecheck/build/backend suite, actual APK and device behavior.
+- [ ] Deliver APK link/checksum/source commit and separate installation evidence; push branch and final PR/compare link.
 
-## Checkpoint 3 - Freeze at 4:10, finish by 4:30 (both)
+## Checkpoint 3 - Freeze 4:10, finish 4:30 (both)
 
-- [ ] Core loop passes with genuine Gemma multimodal inference, or live inference is explicitly reported blocked.
-- [ ] Demo distinguishes simulated transport, AI suggestions, fixture data, and human-verified facts.
-- [ ] No secrets/databases/uploads/model weights are tracked; final branch is reviewable and demo rehearsed.
+- [ ] Genuine live-AI loop passes, or inference blocker is explicitly reported.
+- [ ] Desktop/phone finish gate and APK build/install outcomes are honest and separate.
+- [ ] No secrets/generated runtime artifacts tracked; progress committed/pushed with final handoff.

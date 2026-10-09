@@ -1,40 +1,58 @@
-# Developer 2 prompt: Streamlit UI, demo, and final integration
+# Developer 2 prompt: polished React UI, Android APK, and integration
 
 Copy everything below into the second Codex chat.
 
 ---
 
-You are Developer 2 of a two-developer team building **ReliefMesh**, a 4.5-hour local disaster-reporting prototype. Implement the Streamlit experience, integrate Developer 1's backend, test the complete demo, commit, and push to https://github.com/printf-sourav/ReliefMesh.git. This is an implementation request, not a request for another plan.
+You are Developer 2 of a two-developer team building **ReliefMesh** in 4.5 hours. Build a beautiful responsive React application, an installable Android APK, and the final integrated demo. Implement, test, commit, and push to https://github.com/printf-sourav/ReliefMesh.git. This prompt supersedes the earlier Streamlit plan.
 
-First inspect repository instructions and read `docs/prototype-brief.md`, `docs/shared-contract.md`, `tasks/plan.md`, and `tasks/todo.md`. Developer 1 implements the shared service contract in another Codex chat; consume those Python interfaces directly.
+Read repository instructions and `docs/prototype-brief.md`, `docs/shared-contract.md`, `docs/ui-design.md`, `docs/mobile-apk.md`, `tasks/plan.md`, `tasks/todo.md` and `prompts/progress-checkpoint.md`. Developer 1 implements FastAPI/Gemma/SQLite in another chat. Consume the HTTP contract; never import Python into the frontend.
 
-Use a separate checkout/worktree on `feature/frontend-demo`, starting from the same planning commit on `main` as Developer 1. If both chats share a working directory, create an isolated worktree before editing. Preserve user changes; never switch the other chat's branch or force-push.
+Use an isolated checkout/worktree on `feature/frontend-demo` from the latest React/Android planning commit on `main`. If already started from the old plan, preserve current changes and merge updated `origin/main` first. Never change the other chat's branch, force-push, or overwrite its work.
 
-## Your ownership
+## Ownership and stack
 
-Own `app.py`, `pages/**`, `ui/**`, `requirements.txt`, `requirements-ui.txt`, `README.md`, `tests/ui/**`, `sample_data/images/**`, `docs/demo.md`, and `docs/frontend-handoff.md`. Update only U1-U4 and your checkpoint entries in `tasks/todo.md`. Developer 1 owns services/database/utils and backend configuration/dependencies. Do not add stub backend files, change service signatures independently, or build a separate API server.
+Own `frontend/**`, including React source, npm lockfile, Vite/Tailwind config, frontend env example, tests, Capacitor config and `frontend/android/**`. Also own README, illustrative images, `docs/demo.md`, `docs/android-build.md`, and `docs/frontend-handoff.md`. Update only U1-U6 and your checkpoint entries. Backend/root Python dependencies and config belong to Developer 1.
 
-Make root `requirements.txt` include both `-r requirements-backend.txt` and `-r requirements-ui.txt` so the integrated project has one install command. Until the backend file arrives, document installing UI requirements separately. Preserve links to the developer prompts and planning documents when adding runtime instructions to README.
+Use **React + TypeScript + Vite + Tailwind CSS + shadcn/ui + Lucide + Capacitor Android**. Use `idb` for device IndexedDB storage and React Router hash routing for bundled Android navigation. Build one React app with desktop and mobile layouts. Use one consistent shadcn primitive family; consult official docs for selected versions, pin compatible dependencies and commit the lockfile. CSS transitions and ordinary React state suffice; avoid extra packages without a concrete need.
 
-## Build in this order
+## Design quality is required
 
-1. **First 25 minutes:** build Streamlit navigation and clear citizen/responder pages. Avoid duplicate auto-discovered/custom navigation. Use private, clearly labelled UI fixtures in `ui/dev_fixtures.py` to work immediately against the exact documented shapes. Fixture selection must be explicit; the final default uses real services. Backend import/configuration failures must produce actionable messages, never silent fixture fallback.
-2. **By 75 minutes:** finish citizen reporting: required text/image/location, optional coordinates, safe image preview, clear validation, an Analyze action, editable structured preview, and a separate Submit action. Retain a stable per-draft UUID across reruns/retries. Store original `AnalysisResult` separately from edited fields; create the source with the original result, then apply corrections via the shared service. Editing text/image/location invalidates stale analysis. Avoid resubmission on rerun; allow a deliberate new report to generate a new UUID. Show live/fixture/deferred provenance and human-review status visibly.
-3. Build responder metrics and cluster cards with location, needs, languages, report/photo counts, first/latest times, and pending/verified state. Detail includes original text, model observations, citizen corrections, and source photos. Show reported people per source with unknowns intact; never sum overlapping sources into a unique population count. Filter hub detail to synced sources; show the local queue separately.
-4. Add explicit human confirmation for grouping, keep separate/dismiss, editable corrections, and verification controls. All actions call Developer 1's services. Explain that similarity indicates a possible related report and is not a probability that a report is true. Preserve source inspection before verification.
-5. Add a clearly labelled **simulated transport** online/offline toggle, durable pending queue display, restoration action/feedback, and repeat-safe sync. Render the service's newly delivered IDs/count; repeated actions must not claim the same report was delivered again. Real offline analysis requires local inference. If a remote model is used, offer raw deferred offline submission or analyze before toggling transport offline, and disclose the difference in UI/demo documentation. Do not fabricate a live offline AI result.
-6. Prepare controlled A-D demo cases and suitable licensed or explicitly synthetic flood images, documenting source/provenance. Show clear empty/loading/error states and readable, accessible layouts that work on a narrow screen. Voice and resource matching are stretch scope after the core loop; do not implement mesh networking or unrelated product features.
-7. **At 3:25:** commit your frontend work, fetch `origin`, and merge `origin/feature/backend-ai` into your branch when its handoff is available. Inspect handoff/setup, preserve both developers' checklist updates, connect actual services, and resolve integration defects. Do not cherry-pick arbitrary partial commits or modify backend files concurrently while Developer 1 is still editing them; coordinate a specific handoff commit. Make backend fixes after handoff only when required to complete integration, and explain them.
-8. **By 4:10:** finish real-service acceptance, README setup/model dependencies/architecture/limitations, `docs/demo.md` with a 90-second walkthrough, and frontend handoff. Freeze features; spend the last 20 minutes on bug fixes, reproducibility, and rehearsal.
+Implement `docs/ui-design.md`: calm slate/white/teal palette, locally bundled Manrope, consistent spacing, restrained corners/shadows and clear hierarchy. Desktop: narrow sidebar, compact metrics and incident list/detail workspace. Phone: compact app bar, bottom navigation, large photo picker, one-column form, accessible detail/analysis sheets. Build intentional empty/loading/error/success states.
 
-## Required verification
+Use actual report photos, source information and honest badges. No invented map pins or severity scores, huge gradient hero, heavy glass effects, placeholder controls or generic repeated card grids. Study relevant official component examples or available supplied references and document layout decisions. Include accessible labels/focus/dialogs, 44px touch targets, safe areas, readable contrast and reduced-motion support.
 
-Use Streamlit AppTest where practical plus manual browser checks. Verify required input errors, image preview, analysis edit/retry behavior, stale-analysis invalidation, double-click/rerun repeat safety, original-output/provenance retention, correct metrics, source-level people counts, group/separate/correct/verify actions, pending queue visibility, and actionable failure messages.
+## Build sequence
 
-Run Developer 1's backend test suite after merge. Demonstrate A and B as similar reports that remain separate until human confirmation; C as Hinglish + image structured analysis; D as offline submit -> application restart -> restore -> one delivery -> responder inspection -> verify. Repeating sync must return no newly delivered records. Test genuine multimodal inference where available; disclose any unavailable model instead of claiming the MVP is fully met. Report actual outcomes and commands.
+1. **0:00-0:25:** Vite/React shell, design tokens, routes, mobile navigation, typed API client/types. Use explicit private HTTP fixtures in `frontend/src/mocks/**` with visible development banner and opt-in configuration. Never silently activate mocks on request failure. Configure browser API proxy and a reachable APK API origin.
+2. **Android early gate:** inspect Node, compatible Capacitor, JDK and Android SDK/Gradle. Add native source; build a minimal debug APK by **0:45** before extensive polish. Report concrete missing tools while continuing web work.
+3. **By 1:15:** required text/image/location, optional coordinates, validation, preview, Analyze, editable result and Submit. UUID stays stable per draft across retries. Source changes invalidate stale analysis. Disable simultaneous submissions. Send original AnalysisResult plus separate edits in one multipart request; retain provenance and pending-analysis honesty.
+4. **By 2:00:** dashboard metrics, functional filters/search, list/detail, source text/photos, needs/languages, times and verification. Images use HTTP routes, not laptop file paths. Show people per source without summing overlap. Hub shows synced sources; local queues remain distinct.
+5. **By 2:55:** explicit grouping, separate/dismiss, correction and verification. Implement device queue with UUID/text/location/image Blob/original result/edits/retry state. Confirm IndexedDB transaction before claiming save; handle quota failures. API reachable with simulated transport offline -> server pending record; API unreachable -> device-only queue. Reconnect uploads same UUID, retains failed/unknown items, dequeues only after acknowledgment, then synchronizes server queue. Avoid double counts. Deferred uploads remain analysis-pending until explicit saved-source reanalysis succeeds.
+6. **2:55-3:25:** native image picker/capture, cancellation/permissions, safe areas/keyboard/Android Back, populated APK and API settings/connection feedback. Phone localhost is not laptop localhost. Follow APK spec for LAN/HTTPS or debug HTTP and actual multipart/image testing. Bundle fonts/assets; no delivered `server.url` pointing to Vite.
+7. **At 3:25:** commit frontend, fetch/merge `origin/feature/backend-ai` after its handoff. Preserve both checklists; connect real HTTP by default and resolve defects. Coordinate a handoff commit before modifying backend code. Work against explicit mocks rather than waiting idle.
+8. **By 4:10:** integrated A-E, final APK build, desktop/phone screenshots, README and demo/build handoffs. Freeze features; final 20 minutes for bug fixes and install/rehearsal. Voice, resources, maps, iOS and actual mesh are outside initial scope.
 
-## GitHub delivery and final integration
+## APK required output
 
-Push tested increments to `feature/frontend-demo`. Once integrated, push the completed branch and open a single PR to `main` titled `feat: build ReliefMesh multimodal reporting prototype`. Describe implemented behavior, AI model/runtime, validation evidence, simulated transport, and unresolved limitations. If PR tooling is unavailable, provide the GitHub compare link for the pushed branch. Attach any created PR to this Codex chat. Leave the PR reviewable; do not merge to `main` or deploy without an explicit user request in this development chat.
+App ID `org.reliefmesh.app`, name ReliefMesh, webDir `dist`. Commit native source/config and Gradle wrapper; exclude generated builds/local SDK paths/signing material/APKs from normal Git history. Use compatible same-major Capacitor core/CLI/Android packages.
 
-Do not wait idle for backend work; build against your labelled private fixtures, then integrate. Resolve routine choices yourself, keep the shared contract stable, and report concrete blockers early. Your final response must include app run instructions, what passed, known limitations, and the pushed branch/PR link. A fixture-only demo must be described as incomplete for the live Gemma requirement.
+Run `npm run build`, `npx cap sync android`, then `gradlew.bat assembleDebug` in `frontend/android` (appropriate wrapper on other hosts). Deliver actual `ReliefMesh-demo.apk` as a downloadable local artifact with checksum and source commit. Instructions/screenshots alone are incomplete. Install/launch on an available Android device/emulator; report build success separately from device testing. If tooling blocks the binary, record exact failure and preserve reproducible source while completing web work.
+
+APK bundles React, not Python/Gemma. Disconnected phone cannot use the laptop's model: save raw report/image locally with analysis pending, then upload and explicitly analyze after reconnect. No background-sync guarantee, peer mesh or Play Store release.
+
+## Verification
+
+Run TypeScript checking, production build, focused Vitest/React Testing Library tests for form/queue/retry behavior, and backend tests after merge. Inspect actual browsers at 320/390/768/1440px for keyboard/touch, dialogs, long Hinglish, empty/error/loading states and console errors. Capture rendered screenshots.
+
+Demonstrate A/B related reports without auto-merge; C genuine Hinglish + image analysis; D simulated offline -> restart -> restore -> one delivery -> review; E installed APK with unreachable API -> raw report/photo save -> force-close/reopen -> reconnect -> one server record -> explicit analysis -> verify. Repeated sync/timeout retry must retain stable UUID. Mocks do not prove live AI or Android integration.
+
+## Save progress and deliver
+
+Follow `prompts/progress-checkpoint.md` throughout: commit each meaningful verified increment and preserve progress before every working-turn handoff. Update your task entries/handoff, stage only your owned changes, and push your branch at each checkpoint. For unfinished work, use a clearly marked `wip:` commit with actual validation/blockers; never mark it complete. Never commit secrets/generated runtime files or force-push.
+
+Write frontend/Android/demo handoffs with setup/run/build commands, API address, screenshots, APK artifact/checksum, exact device/runtime, outcomes and limitations. README retains prompt/planning links.
+
+Push integrated branch and open one PR to `main` titled `feat: build ReliefMesh web and Android reporting prototype` with actual AI/browser/APK evidence and limitations. Attach created PR to this chat; if tooling unavailable give pushed compare link. Leave reviewable; merge/deploy only upon user request.
+
+Resolve routine choices, preserve the API, flag concrete blockers early. Final response includes startup, APK link/install, validation and branch/PR. Do not call fixture-only inference or missing APK a complete prototype.
