@@ -164,6 +164,8 @@ Stable `client_report_id` is the report idempotency key. Repeating a committed U
 
 Every error uses `{ "error": { "code": "VALIDATION_ERROR", "message": "Readable message", "details": {} } }`, including framework validation errors. Statuses: 422 invalid metadata/model fields, 413 oversize image, 415 unsupported image type, 404 missing record, 409 conflict, 503 unavailable AI/matching, 500 storage/unexpected errors without leaked internals. Unavailable matching can return an empty duplicate envelope with `matching_available=false` and warnings; do not silently report zero matches as successful semantic detection.
 
+Availability diagnostics: dashboard JSON keeps the exact four metric fields. `GET /dashboard/metrics` also returns CORS-exposed `X-ReliefMesh-Matching-Available: true|false` and, when unavailable, `X-ReliefMesh-Matching-Warning`. If false, render the duplicate metric as unavailable instead of interpreting its numeric placeholder as successful zero detection. These additive headers preserve the agreed JSON schema; the duplicate-detail envelope already contains availability/warnings.
+
 The frontend accesses images through `/reports/{id}/image`, never laptop filesystem paths. Configure explicit development CORS origins for browser and the actual Capacitor WebView origin, using `RELIEFMESH_ALLOWED_ORIGINS`; avoid wildcard credentials. Vite may proxy `/api` to localhost:8000 in browser development. APK uses a reachable absolute API origin via `VITE_API_BASE_URL` or a validated device settings override. Never expose AI provider credentials through `VITE_*` variables. The responder prototype has no production authentication; use a trusted demo network and document that boundary.
 
 ## Device offline queue (Developer 2 owns)

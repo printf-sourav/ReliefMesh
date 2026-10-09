@@ -31,7 +31,8 @@ def create_app() -> FastAPI:
                         "http://localhost:5173,http://127.0.0.1:5173,http://localhost,https://localhost,capacitor://localhost")
     app.add_middleware(CORSMiddleware, allow_origins=[origin.strip() for origin in origins.split(",") if origin.strip()],
                        allow_credentials=False, allow_methods=["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
-                       allow_headers=["Content-Type"])
+                       allow_headers=["Content-Type"],
+                       expose_headers=["X-ReliefMesh-Matching-Available", "X-ReliefMesh-Matching-Warning"])
 
     @app.exception_handler(AppError)
     async def service_error(request: Request, exc: AppError):

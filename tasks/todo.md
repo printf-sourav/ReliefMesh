@@ -14,17 +14,17 @@ Files: schemas, DB, incident service, backend requirements, gitignore. Dependenc
 
 Files: API main/routes, root requirements/env, API tests. Dependencies: B1. Scope: medium.
 
-- [ ] Multipart routes, JSON/error envelopes, pagination, health/OpenAPI are available early.
-- [ ] Safe image-by-ID route and explicit browser/Android origins work.
-- [ ] Verify metadata, errors, CORS, pagination and invalid/oversized images with TestClient/httpx.
+- [x] Multipart routes, JSON/error envelopes, pagination, health/OpenAPI are available early.
+- [x] Safe image-by-ID route and explicit browser/Android origins work.
+- [x] Verify metadata, errors, CORS, pagination and invalid/oversized images with TestClient/httpx.
 
 ## B3 - Genuine multimodal analysis (Developer 1)
 
 Files: Gemma service, config/requirements, analysis tests. Dependencies: B1/B2. Scope: medium.
 
-- [ ] Verify required model/runtime; actual image and text reach inference; unknowns stay unknown.
-- [ ] Explicit live/fixture/deferred provenance, originals and saved-source reanalysis are supported.
-- [ ] Verify provider/malformed errors and genuine Hinglish/image smoke; record actual model/runtime/outcome.
+- [x] Verify required model/runtime; actual image and text reach inference; unknowns stay unknown.
+- [x] Explicit live/fixture/deferred provenance, originals and saved-source reanalysis are supported.
+- [x] Verify provider/malformed errors and genuine Hinglish/image smoke (Hugging Face Gemma 4 31B live request passed; recorded in backend handoff).
 
 ## U1 - React shell and design (Developer 2)
 
@@ -52,7 +52,7 @@ Files: report page, form components, API client, form tests. Dependencies: U1; B
 
 ## Checkpoint 1 - First live API report (both)
 
-- [ ] By 1:15 connect genuine text/image inference to persisted source, or report model blocker.
+- [x] Developer 1: genuine text/image inference and API persistence are verified independently; frontend connection remains Developer 2's checkpoint.
 - [ ] Developer 2 records early APK build outcome before extensive polish.
 - [ ] Both update handoff/checklist, commit progress and push owned branches.
 
@@ -76,9 +76,9 @@ Files: dashboard/detail pages, components, API client, review tests. Dependencie
 
 Files: incident/sync services, routes, DB, sync/review tests. Dependencies: B1-B4. Scope: medium.
 
-- [ ] Corrections preserve originals/reset verification; deferred sources need analysis before verification.
-- [ ] SQLite queue survives restart; repeated sync delivers once; reconnect accepts raw deferred phone uploads.
-- [ ] Verify changed-network retries, offline no-op, mixed hub counts and deferred reanalysis.
+- [x] Corrections preserve originals/reset verification; deferred sources need analysis before verification.
+- [x] SQLite queue survives restart; repeated sync delivers once; reconnect accepts raw deferred phone uploads.
+- [x] Verify changed-network retries, offline no-op, mixed hub counts and deferred reanalysis.
 
 ## U5 - Device queue and phone behavior (Developer 2)
 
