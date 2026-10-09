@@ -3,7 +3,7 @@
 The UI and API use **one HTTPS address**. The browser opens the responder dashboard. Paste that same address into the APK’s Connection settings → Team address; do not append `/api/v1`. Bluetooth sharing stays on the phones and needs both apps open.
 
 1. In Render, connect GitHub and grant access to `printf-sourav/ReliefMesh`.
-2. Choose **New → Blueprint**, select this repository and branch **feature/frontend-demo**, and use `render.yaml`.
+2. Choose **New → Blueprint**, select this repository and branch **main**, and use `render.yaml`.
 3. Review the service and **1 GB persistent disk** shown by Render, apply your credit, and approve creation. This is a paid service configuration; the disk keeps reports and photos across deploys. Check the cost shown in your account before creating it.
 4. Wait for the deploy to become live. Open its HTTPS address: the dashboard should load. Open `/api/v1/health` at that address and confirm `status: ok`.
 5. On the phone, open Connection settings, enter the HTTPS address and save/test. Send a clearly labelled synthetic report and refresh the web dashboard. Then test saving with that address unreachable and sending after reconnecting.

@@ -4,7 +4,7 @@ Frontend inference requests allow 120 seconds by default, aligned with the backe
 
 A local prototype for turning multilingual citizen reports with images into structured incidents for human responders.
 
-**Current status:** the browser contains only the responder dashboard; the Android APK contains simple Report/My reports screens. Full FastAPI routes, human review and native foreground Nearby relay are integrated on `feature/frontend-demo`. The APK is built, verified and installed on one Android 16 phone. Frontend/API/browser/native checks pass, and an earlier real Hugging Face frontend loop is verified. Two-phone acceptance remains untested; the user deferred it. [UI split](docs/web-mobile-ui-split.md), [Render hosting steps](docs/host-demo-render.md), and [frontend handoff](docs/frontend-handoff.md) record the current behavior and limitations. Hosting configuration is pushed; the Render service is not deployed yet.
+**Current status:** `main` is the final integrated demo branch. The browser contains only the responder dashboard; the Android APK contains simple Report/My reports screens. Full FastAPI routes, human review and native foreground Nearby relay are integrated. The APK is built, verified and installed on one Android 16 phone. Frontend/API/browser/native checks pass, and an earlier real Hugging Face frontend loop is verified. Two-phone acceptance remains untested; the user deferred it. [UI split](docs/web-mobile-ui-split.md), [Render hosting steps](docs/host-demo-render.md), and [frontend handoff](docs/frontend-handoff.md) record the current behavior and limitations. Hosting configuration deploys from `main`; the Render service is not deployed yet.
 
 ## Start two Codex chats
 
@@ -48,7 +48,7 @@ The supplied brief names **Gemma 4**. Developers must verify the event-required 
 
 ## Running the app
 
-From the integrated feature checkout, create a separate Python environment and install the pinned backend requirements:
+From the final `main` checkout, create a separate Python environment and install the pinned backend requirements:
 
 ```powershell
 python -m venv .venv

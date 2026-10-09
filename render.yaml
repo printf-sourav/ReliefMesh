@@ -3,7 +3,7 @@ services:
     name: reliefmesh-demo
     runtime: docker
     repo: https://github.com/printf-sourav/ReliefMesh
-    branch: feature/frontend-demo
+    branch: main
     plan: 0.5c-512mb
     autoDeployTrigger: 'off'
     healthCheckPath: /api/v1/health
