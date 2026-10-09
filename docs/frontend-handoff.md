@@ -20,3 +20,11 @@ Setup: `cd frontend; npm ci; npm run dev`. Browser `/api` proxies to `http://127
 Next: connect/report and review screens, full fixture transport, queue controls, focused form tests and real browser checks. Then fetch backend handoff and integrate when available. Keep missing live-AI/APK evidence explicit.
 
 Commit/push result is recorded by the working chat after this checkpoint; use `git log -1` for its exact hash.
+
+## Checkpoint 2 — Reporting, review and queues
+
+Checkpoint 1 was pushed as `610132d5b402e9b90973284593dc0be800292988`. Now connected all three screens: required text/location/photo and optional coordinates, image MIME/10 MB/decoding checks, independent original result and editable fields, explicit raw deferred save, dashboard metrics/search/filter/list/detail, original words/photo/model analysis, human confirmation dialogs for group/separate/verify, correction and explicit saved-source analysis. Device and backend queues show separate counts and retry feedback. No automatic grouping, people aggregation, or inference during sync.
+
+The development fixture adapter supports the HTTP shapes/actions with labelled synthetic illustration and preset A-C analysis/suggestions. Its data resets on reload. This is UI evidence only. Production builds strip fixture behavior; real HTTP remains default. Native manifest permits cleartext in debug only; release defaults prohibit cleartext, and MainActivity enables mixed content only under `BuildConfig.DEBUG`. Android compilation remains blocked by Java, so these settings are source changes without device evidence.
+
+Actual checks: `tsc --noEmit` passed; connected `vite build` passed (1,671 modules, 9.14 seconds); all 11 Vitest tests passed (multipart/origin 2, durable queue 4, citizen form 5). Form checks cover missing photo, stale analysis reset, original/current separation, double submission, uncertain delivery UUID and quota failure before API. Browser screenshots/layout checks are the next action. Bundled Playwright could not launch because its Chromium headless executable is missing; attempting installed Edge next. Backend branch still absent at the prior fetch; no real HTTP/Gemma evidence yet.

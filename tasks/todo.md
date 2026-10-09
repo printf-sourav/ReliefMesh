@@ -46,8 +46,8 @@ Files: Capacitor config, Android source/wrapper, npm scripts, frontend env. Depe
 
 Files: report page, form components, API client, form tests. Dependencies: U1; B2/B3 for live flow. Scope: medium.
 
-- [ ] Required inputs, image picker/preview, optional coordinates, editable analysis and Submit work.
-- [ ] Stable UUID survives retry; changed source invalidates stale output; original/edited analyses remain separate.
+- [x] Required inputs, image picker/preview, optional coordinates, editable analysis and Submit work. Connected UI and focused form tests pass; actual browser/Android checks pending.
+- [x] Stable UUID survives retry; changed source invalidates stale output; original/edited analyses remain separate. Queue and form tests verify retry UUID and separate payloads.
 - [ ] Verify invalid input, double-click/timeout, picker cancel, provenance and live multipart requests.
 
 ## Checkpoint 1 - First live API report (both)
@@ -84,7 +84,7 @@ Files: incident/sync services, routes, DB, sync/review tests. Dependencies: B1-B
 
 Files: queue storage/service/page, transport adapter, queue tests, Android config. Dependencies: U2/U3, B2/B5. Scope: separate storage/retry and native finish increments.
 
-- [ ] IndexedDB commits UUID/text/location/image Blob/result/edits and handles quota errors.
+- [x] IndexedDB commits UUID/text/location/image Blob/result/edits and handles quota errors. Four queue tests and form quota-failure check pass; browser restart/Android checks pending.
 - [ ] Device/server pending states differ; acknowledgment-before-dequeue and retries create one source.
 - [ ] Verify APK cold start, picker/keyboard/safe-area/Back, unreachable-API save, force-close/reopen and reconnect.
 

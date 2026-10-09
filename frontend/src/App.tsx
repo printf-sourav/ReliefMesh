@@ -7,14 +7,18 @@ import { api, fixturesEnabled, getOrigin, setOrigin } from './lib/api';
 import { message } from './lib/utils';
 import { Button } from './components/ui/button';
 import { Dialog, DialogContent, DialogTrigger } from './components/ui/dialog';
+import ReportPage from './pages/report';
+import DashboardPage from './pages/dashboard';
+import QueuePage from './pages/queue';
 interface Connection { online: boolean; setOnline: (value: boolean) => void; refresh: number; changed: () => void }
 const ConnectionContext = createContext<Connection>(null!);
 export const useConnection = () => useContext(ConnectionContext);
 function ConnectionSettings() {
+  const { changed } = useConnection();
   const [origin, editOrigin] = useState(getOrigin()); const [result, setResult] = useState(''); const [busy, setBusy] = useState(false);
   async function test() {
     setBusy(true); setResult('');
-    try { setOrigin(origin); const health = await api.health(); setResult(`API reachable · ${health.ai_mode} mode · ${health.model_id ?? 'model not configured'}. Health does not confirm inference.`); }
+    try { setOrigin(origin); const health = await api.health(); changed(); setResult(`API reachable · ${health.ai_mode} mode · ${health.model_id ?? 'model not configured'}. Health does not confirm inference.`); }
     catch (error) { setResult(message(error)); } finally { setBusy(false); }
   }
   return <Dialog><DialogTrigger asChild><Button variant="ghost" aria-label="Connection settings"><Settings2 size={19}/><span className="desktop-label">Connection</span></Button></DialogTrigger>
@@ -29,7 +33,10 @@ export default function App() {
   const [online, setOnline] = useState(true); const [refresh, setRefresh] = useState(0); const navigate = useNavigate();
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
-    const listener = NativeApp.addListener('backButton', ({ canGoBack }) => { if (canGoBack) navigate(-1); else navigate('/dashboard'); });
+    const listener = NativeApp.addListener('backButton', ({ canGoBack }) => {
+      if (document.querySelector('[role="dialog"]')) document.dispatchEvent(new KeyboardEvent('keydown', { key:'Escape',bubbles:true }));
+      else if (canGoBack) navigate(-1); else navigate('/dashboard');
+    });
     return () => { void listener.then(handle => handle.remove()); };
   }, [navigate]);
   return <ConnectionContext.Provider value={{ online, setOnline, refresh, changed: () => setRefresh(n => n + 1) }}><div className="app-shell">
@@ -41,9 +48,8 @@ export default function App() {
       <div className="topbar-actions"><span className={`connection-badge ${online ? '' : 'amber'}`}>{online ? <Wifi size={14}/> : <WifiOff size={14}/>}<span>{online ? 'Transport online' : 'Transport offline'}</span></span><ConnectionSettings/><Button asChild className="desktop-label"><NavLink to="/report">New report <ArrowUpRight size={17}/></NavLink></Button></div>
     </header>
     {fixturesEnabled && <div className="fixture-banner">Development fixtures · illustrative sources · no live AI or semantic matching · fixture changes reset on reload</div>}
-    <main><Routes><Route path="/" element={<Navigate to="/dashboard" replace/>}/><Route path="/dashboard" element={<Placeholder title="Response dashboard" text="The shared HTTP client is ready. Incident list and source review are the next checkpoint."/>}/><Route path="/report" element={<Placeholder title="Report an incident" text="Citizen text, location and image capture are the next checkpoint."/>}/><Route path="/queue" element={<Placeholder title="Delivery queue" text="Durable device storage is ready. Queue controls are the next checkpoint."/>}/><Route path="*" element={<Navigate to="/dashboard" replace/>}/></Routes></main>
+    <main><Routes><Route path="/" element={<Navigate to="/dashboard" replace/>}/><Route path="/dashboard" element={<DashboardPage/>}/><Route path="/report" element={<ReportPage/>}/><Route path="/queue" element={<QueuePage/>}/><Route path="*" element={<Navigate to="/dashboard" replace/>}/></Routes></main>
     <footer className="workspace-footer">Human review required for AI suggestions <span>Simulated hub · no production authentication</span></footer></div>
     <nav className="bottom-nav" aria-label="Mobile navigation">{navigation.map(({ to, label, icon: Icon }) => <NavLink key={to} to={to}><Icon size={21}/>{label}</NavLink>)}</nav>
   </div></ConnectionContext.Provider>;
 }
-function Placeholder({ title, text }: { title: string; text: string }) { return <><div className="page-heading"><div><span className="eyebrow">COMMUNITY RESPONSE</span><h1>{title}</h1><p>{text}</p></div></div><section className="empty-state"><Radio size={32}/><h2>Workspace initialized</h2><p>Connect a backend in Connection settings to test API availability.</p></section></>; }
