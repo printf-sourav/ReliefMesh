@@ -5,12 +5,14 @@ const { join, resolve } = require('node:path');
 const assert = require('node:assert/strict');
 const output = resolve(process.env.RELIEFMESH_BROWSER_OUTPUT || 'browser-artifacts');
 mkdirSync(output, { recursive:true });
-const failures = [], results = [], errors = [];
+const failures = [], results = [], errors = [], consoleErrors = [];
+let browser;
 async function run(name,work) { try { await work(); results.push({ name,status:'passed' }); } catch(error) { failures.push(name); results.push({ name,status:'failed',error:error.message }); } }
 (async () => {
-  const browser = await chromium.launch({ channel:process.env.RELIEFMESH_BROWSER_CHANNEL || 'msedge',headless:true });
-  const context = await browser.newContext({ viewport:{width:1440,height:1000} });
+  browser = await chromium.launch({ channel:process.env.RELIEFMESH_BROWSER_CHANNEL || 'msedge',headless:true });
+  const context = await browser.newContext({ viewport:{width:1440,height:1000},hasTouch:true });
   const page = await context.newPage(); page.on('pageerror',error => errors.push(error.message));
+  page.on('console',entry => { if(entry.type() === 'error') consoleErrors.push(entry.text()); });
   const base = process.env.RELIEFMESH_FIXTURE_URL || 'http://127.0.0.1:5173';
   await page.goto(`${base}/demo-flood.svg`); await page.screenshot({path:join(output,'synthetic-photo.png')});
   await run('fixture dashboard, selection and search',async () => {
@@ -42,6 +44,10 @@ async function run(name,work) { try { await work(); results.push({ name,status:'
       await page.goto(`${base}/#/${route}`); await page.locator('h1').waitFor();
       const dimensions = await page.evaluate(() => ({ content:document.documentElement.scrollWidth,viewport:innerWidth }));
       assert.ok(dimensions.content <= dimensions.viewport,`${route}: ${JSON.stringify(dimensions)}`);
+      if(width < 768) {
+        for(const button of await page.locator('button:visible').all()) { const box = await button.boundingBox(); assert.ok(box.height >= 44,`Touch target below 44px on ${route}`); }
+        await page.getByRole('link',{name:'Queue',exact:true}).tap(); await page.getByRole('link',{name:route === 'dashboard' ? 'Dashboard' : route === 'report' ? 'Report' : 'Queue',exact:true}).tap();
+      }
       if (width === 390 || width === 1440) await page.screenshot({path:join(output,`${width}-${route}.png`),fullPage:true});
     }
     if (width < 768) { await page.goto(`${base}/#/dashboard`); await page.getByRole('button',{name:/Riverside Colony/}).first().click(); await page.getByText('ORIGINAL CITIZEN REPORT',{exact:true}).waitFor(); await page.screenshot({path:join(output,`${width}-detail.png`),fullPage:true}); await page.getByRole('button',{name:'Back to incidents'}).click(); }
@@ -85,7 +91,7 @@ async function run(name,work) { try { await work(); results.push({ name,status:'
     await live.getByRole('button',{name:'Retry device uploads & sync'}).click(); await live.getByRole('status').filter({hasText:'0 device reports acknowledged'}).waitFor(); assert.equal(uuids.length,1);
     await live.close();
   });
-  assert.equal(errors.length,0,JSON.stringify(errors));
-  await browser.close(); writeFileSync(join(output,'results.json'),JSON.stringify({results,pageErrors:errors},null,2));
-  console.log(JSON.stringify({results,pageErrors:errors},null,2)); if(failures.length) process.exitCode=1;
-})().catch(error => { console.error(error); process.exitCode=1; });
+  assert.equal(errors.length,0,JSON.stringify(errors)); assert.equal(consoleErrors.length,0,JSON.stringify(consoleErrors));
+  await browser.close(); writeFileSync(join(output,'results.json'),JSON.stringify({results,pageErrors:errors,fixtureConsoleErrors:consoleErrors},null,2));
+  console.log(JSON.stringify({results,pageErrors:errors,fixtureConsoleErrors:consoleErrors},null,2)); if(failures.length) process.exitCode=1;
+})().catch(error => { console.error(error); process.exitCode=1; }).finally(async () => { if(browser) await browser.close(); });

@@ -88,3 +88,59 @@ def test_concurrent_http_retry_has_one_creation(client, draft):
         responses = list(pool.map(lambda _: submit(client, draft), range(3)))
     assert sorted(response.status_code for response in responses) == [200, 200, 201]
     assert len({response.json()["id"] for response in responses}) == 1
+
+
+def test_full_offline_review_flow_and_matching_availability(client, draft, analysis):
+    first = submit(client, draft, analysis).json()
+    second_draft = draft.model_copy(update={"client_report_id": str(uuid4())})
+    second = submit(client, second_draft, analysis).json()
+    assert client.get("/api/v1/queue").json()["total"] == 2
+    assert client.get("/api/v1/clusters").json()["items"] == []
+    assert client.post("/api/v1/sync", json={"network_online": False}).json()["pending_count"] == 2
+    assert len(client.post("/api/v1/sync", json={"network_online": True}).json()["synced_report_ids"]) == 2
+    assert client.post("/api/v1/sync", json={"network_online": True}).json()["synced_report_ids"] == []
+    duplicate = client.get(f"/api/v1/reports/{first['id']}/duplicates").json()
+    assert duplicate["matching_available"] is False
+    assert duplicate["warnings"]
+    metrics = client.get("/api/v1/dashboard/metrics")
+    assert metrics.headers["X-ReliefMesh-Matching-Available"] == "false"
+    assert metrics.json()["active_clusters"] == 2
+    assert metrics.json()["pending_sync_reports"] == 0
+    linked = client.put(f"/api/v1/reports/{second['id']}/cluster-membership",
+                        json={"target_cluster_id": first["cluster_id"]})
+    assert linked.status_code == 200
+    assert client.get(f"/api/v1/clusters/{first['cluster_id']}/reports").json()["total"] == 2
+    assert client.post(f"/api/v1/reports/{first['id']}/verifications").json()["verification_status"] == "verified"
+    edited = analysis.analysis.model_dump() | {"people_affected": None}
+    corrected = client.patch(f"/api/v1/reports/{first['id']}/analysis", json={"analysis": edited}).json()
+    assert corrected["verification_status"] == "pending"
+    assert corrected["original_analysis"]["people_affected"] == 4
+    assert client.delete(f"/api/v1/reports/{second['id']}/cluster-membership").status_code == 200
+
+
+def test_http_fixture_analysis_and_saved_deferred_analysis(client, draft):
+    from utils.config import ROOT
+
+    fixture = json.loads((ROOT / "sample_data/demo_reports.json").read_text())[0]
+    draft = draft.model_copy(update={"original_text": fixture["original_text"], "location": fixture["location"]})
+    info = {key: value for key, value in metadata(draft).items() if key not in {"network_online", "analysis_result"}}
+    response = client.post("/api/v1/analyses", data={"metadata": json.dumps(info)},
+                           files={"image": ("image.png", draft.image_bytes, "image/png")})
+    assert response.json()["analysis_mode"] == "fixture"
+    source = submit(client, draft).json()
+    assert client.post(f"/api/v1/reports/{source['id']}/verifications").status_code == 409
+    analyzed = client.post(f"/api/v1/reports/{source['id']}/analyses").json()
+    assert analyzed["analysis_mode"] == "fixture"
+    assert analyzed["original_analysis"] is not None
+
+
+def test_stored_image_path_cannot_escape_upload_root(client, draft, tmp_path):
+    from database.db import connection
+
+    source = submit(client, draft).json()
+    secret = tmp_path / "outside.png"
+    secret.write_bytes(b"must not be returned")
+    source["image_path"] = "../outside.png"
+    with connection(write=True) as conn:
+        conn.execute("UPDATE reports SET record_json=? WHERE id=?", (json.dumps(source), source["id"]))
+    assert client.get(f"/api/v1/reports/{source['id']}/image").status_code == 404

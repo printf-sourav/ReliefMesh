@@ -29,5 +29,6 @@ export interface DuplicateCandidate { incident_id: string; cluster_id: string; s
 export interface Page<T> { items: T[]; total: number; offset: number; limit: number }
 export interface DuplicatePage extends Page<DuplicateCandidate> { matching_available: boolean; warnings: string[] }
 export interface DashboardMetrics { active_clusters: number; possible_duplicate_reports: number; pending_verification_reports: number; pending_sync_reports: number }
+export interface DashboardSnapshot extends DashboardMetrics { matching_available: boolean | null; matching_warning: string | null }
 export interface SyncResult { synced_report_ids: string[]; pending_count: number }
 export interface Health { status: string; ai_mode: string; model_id: string | null }

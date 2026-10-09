@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import type { AnalysisResult, ClusterSummary, DashboardMetrics, Draft, DuplicatePage, Health, IncidentAnalysis, IncidentRecord, Page, Submission, SyncResult } from './api-types';
+import type { AnalysisResult, ClusterSummary, DashboardMetrics, DashboardSnapshot, Draft, DuplicatePage, Health, IncidentAnalysis, IncidentRecord, Page, Submission, SyncResult } from './api-types';
 
 export class ApiError extends Error {
   constructor(public code: string, message: string, public status = 0) { super(message); }
@@ -17,7 +17,7 @@ export function validateOrigin(value: string): string {
 export function getOrigin() { return localStorage.getItem(overrideKey) ?? import.meta.env.VITE_API_BASE_URL ?? ''; }
 export function setOrigin(value: string) { localStorage.setItem(overrideKey, validateOrigin(value)); }
 export function imageUrl(id: string) { return `${getOrigin()}/api/v1/reports/${encodeURIComponent(id)}/image`; }
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+async function request<T>(path: string, init?: RequestInit, inspectHeaders?: (headers: Headers) => void): Promise<T> {
   if (fixturesEnabled) {
     const { mockRequest } = await import('../mocks/transport');
     return mockRequest<T>(path, init);
@@ -32,6 +32,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     const error = (body as { error?: { code?: string; message?: string } }).error;
     throw new ApiError(error?.code ?? 'HTTP_ERROR', error?.message ?? `API request failed (${response.status}).`, response.status);
   }
+  inspectHeaders?.(response.headers);
   return body as T;
 }
 function json(method: string, body?: unknown): RequestInit {
@@ -57,7 +58,16 @@ export const api = {
   report: (id: string) => request<IncidentRecord>(`/reports/${encodeURIComponent(id)}`),
   clusters: (offset = 0) => request<Page<ClusterSummary>>(`/clusters?synced_only=true&offset=${offset}&limit=100`),
   sources: (id: string, offset = 0) => request<Page<IncidentRecord>>(`/clusters/${encodeURIComponent(id)}/reports?synced_only=true&offset=${offset}&limit=100`),
-  metrics: () => request<DashboardMetrics>('/dashboard/metrics'),
+  metrics: async (): Promise<DashboardSnapshot> => {
+    let matching_available: boolean | null = fixturesEnabled ? true : null;
+    let matching_warning: string | null = null;
+    const metrics = await request<DashboardMetrics>('/dashboard/metrics', undefined, headers => {
+      const value = headers.get('X-ReliefMesh-Matching-Available');
+      matching_available = value === 'true' ? true : value === 'false' ? false : null;
+      matching_warning = headers.get('X-ReliefMesh-Matching-Warning');
+    });
+    return { ...metrics, matching_available, matching_warning };
+  },
   duplicates: (id: string) => request<DuplicatePage>(`/reports/${encodeURIComponent(id)}/duplicates?synced_only=true&offset=0&limit=100`),
   correct: (id: string, analysis: IncidentAnalysis) => request<IncidentRecord>(`/reports/${encodeURIComponent(id)}/analysis`, json('PATCH', { analysis })),
   reanalyze: (id: string) => request<IncidentRecord>(`/reports/${encodeURIComponent(id)}/analyses`, { method: 'POST' }),

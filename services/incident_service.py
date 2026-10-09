@@ -1,5 +1,7 @@
 import hashlib
 import json
+import math
+import re
 from datetime import datetime, timezone
 from uuid import uuid4
 
@@ -8,8 +10,8 @@ from pydantic import ValidationError as ModelValidationError
 from database.db import connection
 from utils.config import settings
 from utils.schemas import (
-    AnalysisResult, ConflictError, IncidentAnalysis, IncidentRecord,
-    NotFoundError, ReportDraft, ValidationError,
+    AnalysisResult, ClusterSummary, ConflictError, DashboardMetrics, DuplicateCandidate,
+    IncidentAnalysis, IncidentRecord, MatchingUnavailableError, NotFoundError, ReportDraft, ValidationError,
 )
 
 
@@ -113,3 +115,189 @@ def list_reports(*, synced_only: bool = False) -> list[IncidentRecord]:
 def get_report(report_id: str) -> IncidentRecord:
     with connection() as conn:
         return _get(conn, report_id)
+
+
+def get_cluster_reports(cluster_id: str) -> list[IncidentRecord]:
+    with connection() as conn:
+        rows = conn.execute("SELECT * FROM reports WHERE cluster_id=? ORDER BY created_at, id", (cluster_id,)).fetchall()
+        if not rows:
+            raise NotFoundError("Incident cluster was not found.")
+        return [_from_row(row) for row in rows]
+
+
+def list_clusters(*, synced_only: bool = True) -> list[ClusterSummary]:
+    groups: dict[str, list[IncidentRecord]] = {}
+    for source in list_reports(synced_only=synced_only):
+        groups.setdefault(source.cluster_id, []).append(source)
+    return [ClusterSummary(
+        cluster_id=cluster_id, title=sources[0].location,
+        report_count=len(sources), photo_count=sum(bool(source.image_path) for source in sources),
+        reported_needs=sorted({need for source in sources if source.analysis for need in source.analysis.reported_needs}),
+        languages=sorted({source.analysis.language for source in sources if source.analysis}),
+        people_counts_by_report={source.id: source.analysis.people_affected if source.analysis else None for source in sources},
+        first_report_at=min(source.created_at for source in sources),
+        latest_report_at=max(source.updated_at for source in sources),
+        verification_status="verified" if all(source.verification_status == "verified" for source in sources) else "pending",
+    ) for cluster_id, sources in groups.items()]
+
+
+def update_report_analysis(report_id: str, analysis: IncidentAnalysis) -> IncidentRecord:
+    try:
+        analysis = IncidentAnalysis.model_validate(analysis.model_dump())
+    except ModelValidationError as exc:
+        raise ValidationError("Corrected analysis fields are invalid.") from exc
+    with connection(write=True) as conn:
+        record = _get(conn, report_id)
+        if record.analysis_mode == "deferred":
+            raise ConflictError("Analyze the saved report before correcting its AI analysis.", code="ANALYSIS_PENDING")
+        changed = record.model_copy(update={"analysis": analysis, "updated_at": now(), "verification_status": "pending"})
+        _save(conn, changed)
+        conn.execute("DELETE FROM embeddings WHERE report_id=?", (report_id,))
+        return changed
+
+
+def verify_report(report_id: str) -> IncidentRecord:
+    with connection(write=True) as conn:
+        record = _get(conn, report_id)
+        if record.analysis is None or record.analysis_mode == "deferred":
+            raise ConflictError("This report still needs analysis before verification.", code="ANALYSIS_PENDING")
+        if record.verification_status == "verified":
+            return record
+        changed = record.model_copy(update={"verification_status": "verified", "updated_at": now()})
+        _save(conn, changed)
+        return changed
+
+
+def analyze_saved_report(report_id: str) -> IncidentRecord:
+    from services.gemma_service import analyze_report
+
+    source = get_report(report_id)
+    if source.analysis_mode != "deferred":
+        return source  # no repeated paid inference on an already-analyzed source
+    root = settings().upload_dir
+    path = (root / source.image_path).resolve()
+    if not path.is_relative_to(root) or not path.is_file():
+        raise NotFoundError("Saved report image was not found.")
+    mime = {".jpg": "image/jpeg", ".png": "image/png", ".webp": "image/webp"}[path.suffix]
+    try:
+        image_data = path.read_bytes()
+    except OSError as exc:
+        from utils.schemas import StorageError
+        raise StorageError("Saved report image could not be read.") from exc
+    draft = ReportDraft(client_report_id=source.client_report_id, original_text=source.original_text,
+                        location=source.location, latitude=source.latitude, longitude=source.longitude,
+                        image_bytes=image_data, image_name=path.name, image_mime=mime)
+    result = analyze_report(draft)
+    with connection(write=True) as conn:
+        current = _get(conn, report_id)
+        if current.analysis_mode != "deferred":
+            return current
+        changed = current.model_copy(update={"analysis": result.analysis, "original_analysis": result.analysis,
+                                             "analysis_mode": result.analysis_mode, "model_id": result.model_id,
+                                             "verification_status": "pending", "updated_at": now()})
+        _save(conn, changed)
+        conn.execute("DELETE FROM embeddings WHERE report_id=?", (report_id,))
+        return changed
+
+
+def link_report(report_id: str, target_cluster_id: str) -> IncidentRecord:
+    with connection(write=True) as conn:
+        source = _get(conn, report_id)
+        rows = conn.execute("SELECT * FROM reports WHERE cluster_id=?", (target_cluster_id,)).fetchall()
+        if not rows:
+            raise NotFoundError("Target cluster was not found.")
+        if source.cluster_id == target_cluster_id:
+            return source
+        timestamp = now()
+        for row in rows:
+            target = _from_row(row)
+            _save(conn, target.model_copy(update={"verification_status": "pending", "updated_at": timestamp}))
+        changed = source.model_copy(update={"cluster_id": target_cluster_id, "verification_status": "pending", "updated_at": timestamp})
+        _save(conn, changed)
+        return changed
+
+
+def _compatible_location(first: IncidentRecord, second: IncidentRecord) -> bool:
+    if all(value is not None for value in [first.latitude, first.longitude, second.latitude, second.longitude]):
+        lat1, lat2 = math.radians(first.latitude), math.radians(second.latitude)
+        dlat = lat2 - lat1
+        dlon = math.radians(second.longitude - first.longitude)
+        distance = 6371 * 2 * math.asin(min(1, math.sqrt(math.sin(dlat / 2) ** 2 +
+                                       math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2)))
+        if distance > 1:
+            return False
+    ignored = {"near", "beside", "at", "the", "junction", "road", "street", "ke", "paas"}
+    first_words = set(re.findall(r"\w+", first.location.casefold())) - ignored
+    second_words = set(re.findall(r"\w+", second.location.casefold())) - ignored
+    return bool(first_words and second_words and (first_words <= second_words or second_words <= first_words))
+
+
+def keep_report_separate(report_id: str) -> IncidentRecord:
+    try:
+        suggested_ids = {candidate.incident_id for candidate in find_possible_duplicates(report_id)}
+    except MatchingUnavailableError:
+        suggested_ids = set()
+    with connection(write=True) as conn:
+        source = _get(conn, report_id)
+        all_sources = [_from_row(row) for row in conn.execute("SELECT * FROM reports").fetchall()]
+        siblings = [item for item in all_sources if item.cluster_id == source.cluster_id and item.id != source.id]
+        for other in all_sources:
+            if other.id != source.id and (other.cluster_id == source.cluster_id or other.id in suggested_ids):
+                conn.executemany("INSERT OR IGNORE INTO dismissals VALUES (?, ?)", [(source.id, other.id), (other.id, source.id)])
+        if not siblings:
+            return source
+        changed = source.model_copy(update={"cluster_id": str(uuid4()), "verification_status": "pending", "updated_at": now()})
+        _save(conn, changed)
+        return changed
+
+
+def find_possible_duplicates(report_id: str, *, threshold: float = 0.80) -> list[DuplicateCandidate]:
+    return duplicate_candidates(report_id, threshold=threshold, synced_only=False)
+
+
+def duplicate_candidates(report_id: str, *, threshold: float = 0.80,
+                         synced_only: bool = False) -> list[DuplicateCandidate]:
+    from services import embedding_service
+
+    source = get_report(report_id)
+    if not math.isfinite(threshold) or not 0 <= threshold <= 1:
+        raise ValidationError("Similarity threshold must be between 0 and 1.")
+    embedding_service.require_matching()
+    with connection() as conn:
+        dismissed = {row[0] for row in conn.execute("SELECT other_report_id FROM dismissals WHERE report_id=?", (report_id,))}
+    candidates = [candidate for candidate in list_reports(synced_only=synced_only)
+                  if candidate.id != source.id and candidate.cluster_id != source.cluster_id
+                  and candidate.id not in dismissed and _compatible_location(source, candidate)]
+    if not candidates:
+        return []
+    vector = embedding_service.get_embedding(source)
+    matches = []
+    for candidate in candidates:
+        score = embedding_service.cosine(vector, embedding_service.get_embedding(candidate))
+        if score >= threshold:
+            matches.append(DuplicateCandidate(incident_id=candidate.id, cluster_id=candidate.cluster_id,
+                           similarity=score, summary=candidate.analysis.summary if candidate.analysis else candidate.original_text,
+                           location=candidate.location))
+    return sorted(matches, key=lambda match: (-match.similarity, match.incident_id))
+
+
+def dashboard_snapshot() -> tuple[DashboardMetrics, bool, list[str]]:
+    synced = list_reports(synced_only=True)
+    pending = list_reports()
+    duplicate_count = 0
+    available, warnings = True, []
+    try:
+        from services.embedding_service import require_matching
+        require_matching()
+        duplicate_count = sum(bool(duplicate_candidates(source.id, synced_only=True)) for source in synced)
+    except MatchingUnavailableError as exc:
+        available, warnings = False, [exc.message]
+    metrics = DashboardMetrics(active_clusters=len({source.cluster_id for source in synced}),
+                               possible_duplicate_reports=duplicate_count,
+                               pending_verification_reports=sum(source.verification_status == "pending" for source in synced),
+                               pending_sync_reports=sum(source.sync_status == "pending" for source in pending))
+    return metrics, available, warnings
+
+
+def get_dashboard_metrics() -> DashboardMetrics:
+    return dashboard_snapshot()[0]

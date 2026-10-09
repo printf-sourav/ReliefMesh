@@ -12,6 +12,8 @@ location of your Java installation.
 
 No Android SDK environment or usual local SDK/Android Studio installation was found; `adb` is unavailable. No APK binary/checksum/device evidence exists yet. APK acceptance is incomplete.
 
+Final source check: production frontend build and `cap sync android` passed with 1,671 modules (5.63s build, 0.375s sync). Debug manifest alone enables cleartext. MainActivity enables mixed content only when `BuildConfig.DEBUG`; explicit `buildFeatures.buildConfig` is enabled. These Java/manifest changes remain uncompiled because the JDK is absent. File input supports gallery and an optional camera capture intent; cancellation/permissions/keyboard/Back on a real Android device are unverified.
+
 Use the [Capacitor 7 environment requirements](https://capacitorjs.com/docs/v7/getting-started/environment-setup). With JDK and Android SDK installed:
 
 ```powershell

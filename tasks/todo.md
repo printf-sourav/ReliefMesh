@@ -14,17 +14,17 @@ Files: schemas, DB, incident service, backend requirements, gitignore. Dependenc
 
 Files: API main/routes, root requirements/env, API tests. Dependencies: B1. Scope: medium.
 
-- [ ] Multipart routes, JSON/error envelopes, pagination, health/OpenAPI are available early.
-- [ ] Safe image-by-ID route and explicit browser/Android origins work.
-- [ ] Verify metadata, errors, CORS, pagination and invalid/oversized images with TestClient/httpx.
+- [x] Multipart routes, JSON/error envelopes, pagination, health/OpenAPI are available early.
+- [x] Safe image-by-ID route and explicit browser/Android origins work.
+- [x] Verify metadata, errors, CORS, pagination and invalid/oversized images with TestClient/httpx.
 
 ## B3 - Genuine multimodal analysis (Developer 1)
 
 Files: Gemma service, config/requirements, analysis tests. Dependencies: B1/B2. Scope: medium.
 
-- [ ] Verify required model/runtime; actual image and text reach inference; unknowns stay unknown.
-- [ ] Explicit live/fixture/deferred provenance, originals and saved-source reanalysis are supported.
-- [ ] Verify provider/malformed errors and genuine Hinglish/image smoke; record actual model/runtime/outcome.
+- [x] Verify required model/runtime; actual image and text reach inference; unknowns stay unknown.
+- [x] Explicit live/fixture/deferred provenance, originals and saved-source reanalysis are supported.
+- [x] Verify provider/malformed errors and genuine Hinglish/image smoke (Hugging Face Gemma 4 31B live request passed; recorded in backend handoff).
 
 ## U1 - React shell and design (Developer 2)
 
@@ -52,7 +52,7 @@ Files: report page, form components, API client, form tests. Dependencies: U1; B
 
 ## Checkpoint 1 - First live API report (both)
 
-- [ ] By 1:15 connect genuine text/image inference to persisted source, or report model blocker.
+- [x] Developer 1: genuine text/image inference and API persistence are verified independently; frontend connection remains Developer 2's checkpoint.
 - [ ] Developer 2 records early APK build outcome before extensive polish.
 - [ ] Both update handoff/checklist, commit progress and push owned branches.
 
@@ -69,16 +69,16 @@ Files: embedding/incident services, DB, duplicate tests. Dependencies: B1/B3. Sc
 Files: dashboard/detail pages, components, API client, review tests. Dependencies: U1; B2/B4 for live flow. Scope: separate list/detail and control increments.
 
 - [x] Polished desktop/phone metrics, sources/photos, needs, language, dates and per-source counts render. Fixture screenshots and real browser interaction checked; API integration pending.
-- [ ] Human grouping, separate, correction, deferred analysis and verification call real routes.
-- [ ] Verify states, hub filtering, keyboard/focus, touch and source inspection.
+- [x] Human grouping, separate, correction, deferred analysis and verification call real routes. Actual HTTP/SQLite browser smoke passed with explicit backend fixture AI; deferred verification rejection and correction reset verified.
+- [x] Verify states, hub filtering, keyboard/focus, touch and source inspection. Browser layouts/navigation/dialog focus and source inspection pass; native device checks remain under U5/U6.
 
 ## B5 - Review integrity and sync (Developer 1)
 
 Files: incident/sync services, routes, DB, sync/review tests. Dependencies: B1-B4. Scope: medium.
 
-- [ ] Corrections preserve originals/reset verification; deferred sources need analysis before verification.
-- [ ] SQLite queue survives restart; repeated sync delivers once; reconnect accepts raw deferred phone uploads.
-- [ ] Verify changed-network retries, offline no-op, mixed hub counts and deferred reanalysis.
+- [x] Corrections preserve originals/reset verification; deferred sources need analysis before verification.
+- [x] SQLite queue survives restart; repeated sync delivers once; reconnect accepts raw deferred phone uploads.
+- [x] Verify changed-network retries, offline no-op, mixed hub counts and deferred reanalysis.
 
 ## U5 - Device queue and phone behavior (Developer 2)
 
@@ -106,7 +106,7 @@ Files: handoff, sample report JSON, tests/requirements. Dependencies: B1-B5. Sco
 
 Files: README, demo/frontend/Android handoffs, sample images, integration checks. Dependencies: B6/U1-U5. Scope: separate validation and documentation/artifact increments.
 
-- [ ] Merge backend; default uses real HTTP; document frontend/backend/API-origin setup.
+- [x] Merge backend; default uses real HTTP; document frontend/backend/API-origin setup. Backend e3b2ccc integrated; real multipart/image/review/deferred/sync HTTP smoke passes; README/handoff updated.
 - [ ] Verify A-E and screenshots, typecheck/build/backend suite, actual APK and device behavior.
 - [ ] Deliver APK link/checksum/source commit and separate installation evidence; push branch and final PR/compare link.
 

@@ -1,5 +1,6 @@
 // Private development HTTP fixtures. Never activate as a network-error fallback.
 import { ApiError } from '../lib/api';
+import { createReportId } from '../lib/draft';
 import type { AnalysisResult, ClusterSummary, IncidentAnalysis, IncidentRecord } from '../lib/api-types';
 const now = '2026-10-09T05:20:00Z';
 const road: IncidentAnalysis = { incident_type:'Road flooding', summary:'Floodwater is blocking the road near City School. The citizen reports that the road cannot be crossed.', people_affected:null,vulnerable_people:[],reported_needs:['Safe passage'],location_context:'Road near City School',language:'Hinglish',image_observations:['Illustrative synthetic image; no live image analysis.'],confidence:null,verification_required:true };
@@ -29,7 +30,7 @@ export async function mockRequest<T>(path: string, init?: RequestInit): Promise<
     const { network_online,...identity } = metadata; const hash = JSON.stringify({ identity,bytes });
     const prior = reports.find(item => item.client_report_id === metadata.client_report_id);
     if (prior) { if (identities.get(metadata.client_report_id) !== hash) fail('IDEMPOTENCY_CONFLICT','Same UUID has a different fixture payload.'); return result(prior); }
-    const item: IncidentRecord = { id:crypto.randomUUID(),client_report_id:metadata.client_report_id,cluster_id:crypto.randomUUID(),original_text:metadata.original_text,location:metadata.location,latitude:metadata.latitude,longitude:metadata.longitude,image_path:'fixture-upload',created_at:new Date().toISOString(),updated_at:new Date().toISOString(),analysis:metadata.edited_analysis ?? metadata.analysis_result?.analysis ?? null,original_analysis:metadata.analysis_result?.analysis ?? null,analysis_mode:metadata.analysis_result?.analysis_mode ?? 'deferred',model_id:metadata.analysis_result?.model_id ?? null,verification_status:'pending',network_status_at_submission:network_online ? 'online' : 'offline',sync_status:network_online ? 'synced' : 'pending' };
+    const item: IncidentRecord = { id:createReportId(),client_report_id:metadata.client_report_id,cluster_id:createReportId(),original_text:metadata.original_text,location:metadata.location,latitude:metadata.latitude,longitude:metadata.longitude,image_path:'fixture-upload',created_at:new Date().toISOString(),updated_at:new Date().toISOString(),analysis:metadata.edited_analysis ?? metadata.analysis_result?.analysis ?? null,original_analysis:metadata.analysis_result?.analysis ?? null,analysis_mode:metadata.analysis_result?.analysis_mode ?? 'deferred',model_id:metadata.analysis_result?.model_id ?? null,verification_status:'pending',network_status_at_submission:network_online ? 'online' : 'offline',sync_status:network_online ? 'synced' : 'pending' };
     identities.set(item.client_report_id,hash); images.set(item.id,URL.createObjectURL(image)); reports.push(item); return result(item);
   }
   if (route === '/reports' && method === 'GET') return page(reports.filter(item => url.searchParams.get('synced_only') !== 'true' || item.sync_status === 'synced'));
@@ -52,7 +53,7 @@ export async function mockRequest<T>(path: string, init?: RequestInit): Promise<
     if (action === 'analyses') { item.analysis=structuredClone(home); item.original_analysis=structuredClone(home); item.analysis_mode='fixture'; item.model_id='illustrative-development-fixture'; item.verification_status='pending'; }
     if (action === 'verifications') { if (!item.analysis || item.analysis_mode === 'deferred') fail('ANALYSIS_REQUIRED','Analyze the saved source before verification.'); item.verification_status='verified'; }
     if (action === 'cluster-membership') {
-      if (method === 'DELETE') { if (reports.filter(other => other.cluster_id === item.cluster_id).length > 1) item.cluster_id=crypto.randomUUID(); dismissed.add(item.id); }
+      if (method === 'DELETE') { if (reports.filter(other => other.cluster_id === item.cluster_id).length > 1) item.cluster_id=createReportId(); dismissed.add(item.id); }
       else { const target = JSON.parse(init!.body as string).target_cluster_id; if (!reports.some(other => other.cluster_id === target)) fail('NOT_FOUND','Target group missing.',404); if (item.cluster_id !== target) { item.cluster_id=target; reports.filter(other => other.cluster_id === target).forEach(other => { other.verification_status='pending'; }); } }
     }
     item.updated_at=new Date().toISOString(); return result(item);

@@ -6,17 +6,17 @@ import { Button } from '../components/ui/button';
 import { AnalysisEditor, cleanAnalysis } from '../components/analysis-editor';
 import { api } from '../lib/api';
 import type { AnalysisResult, Draft, IncidentAnalysis } from '../lib/api-types';
-import { validateDraft, validateImage } from '../lib/draft';
+import { createReportId, validateDraft, validateImage } from '../lib/draft';
 import { acknowledge, saveQueued } from '../lib/queue';
 import { message } from '../lib/utils';
 export default function ReportPage() {
   const { online, changed } = useConnection();
-  const [id,setId] = useState(() => crypto.randomUUID()); const [text,setText] = useState(''); const [location,setLocation] = useState('');
+  const [id,setId] = useState(createReportId); const [text,setText] = useState(''); const [location,setLocation] = useState('');
   const [latitude,setLatitude] = useState(''); const [longitude,setLongitude] = useState(''); const [photo,setPhoto] = useState<File | null>(null); const [photoUrl,setPhotoUrl] = useState('');
   const [result,setResult] = useState<AnalysisResult | null>(null); const [edited,setEdited] = useState<IncidentAnalysis | null>(null);
   const [busy,setBusy] = useState(''); const busyRef = useRef(false); const [error,setError] = useState(''); const [success,setSuccess] = useState(''); const [saved,setSaved] = useState(false);
   useEffect(() => { if (!photo) { setPhotoUrl(''); return; } const url = URL.createObjectURL(photo); setPhotoUrl(url); return () => URL.revokeObjectURL(url); }, [photo]);
-  function invalidate() { setResult(null); setEdited(null); setId(crypto.randomUUID()); setError(''); setSuccess(''); }
+  function invalidate() { setResult(null); setEdited(null); setId(createReportId()); setError(''); setSuccess(''); }
   function draft(): Draft {
     if (!photo) throw new Error('Add an incident photo.');
     const value = { client_report_id:id, original_text:text, location, latitude:latitude === '' ? null : Number(latitude), longitude:longitude === '' ? null : Number(longitude), image:photo, image_name:photo.name, image_mime:photo.type };

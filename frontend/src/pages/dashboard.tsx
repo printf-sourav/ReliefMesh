@@ -5,12 +5,12 @@ import { useConnection } from '../App';
 import { Button } from '../components/ui/button';
 import { SourcePhoto } from '../components/source-photo';
 import { api, allPages } from '../lib/api';
-import type { ClusterSummary, DashboardMetrics, IncidentRecord } from '../lib/api-types';
+import type { ClusterSummary, DashboardSnapshot, IncidentRecord } from '../lib/api-types';
 import { date, message, timeZone } from '../lib/utils';
 import { IncidentDetail } from './detail';
 export default function DashboardPage() {
   const { refresh } = useConnection(); const [params,setParams] = useSearchParams(); const selected = params.get('incident');
-  const [clusters,setClusters] = useState<ClusterSummary[]>([]); const [reports,setReports] = useState<IncidentRecord[]>([]); const [metrics,setMetrics] = useState<DashboardMetrics | null>(null);
+  const [clusters,setClusters] = useState<ClusterSummary[]>([]); const [reports,setReports] = useState<IncidentRecord[]>([]); const [metrics,setMetrics] = useState<DashboardSnapshot | null>(null);
   const [busy,setBusy] = useState(true); const [error,setError] = useState(''); const [query,setQuery] = useState(''); const [status,setStatus] = useState('all'); const [reload,setReload] = useState(0);
   useEffect(() => {
     let current = true; setBusy(true); setError('');
@@ -25,10 +25,12 @@ export default function DashboardPage() {
     return haystack.includes(query.toLowerCase()) && (status === 'all' || cluster.verification_status === status);
   });
   const active = clusters.find(cluster => cluster.cluster_id === selected);
-  const metricList = [{ label:'Active incidents',value:metrics?.active_clusters,icon:Layers },{ label:'Review pending',value:metrics?.pending_verification_reports,icon:ShieldCheck },{ label:'Possible duplicates',value:metrics?.possible_duplicate_reports,icon:CircleDot },{ label:'Backend queue',value:metrics?.pending_sync_reports,icon:Radio }];
+  const duplicateValue = metrics ? metrics.matching_available === true ? metrics.possible_duplicate_reports : metrics.matching_available === false ? 'Unavailable' : 'Unknown' : undefined;
+  const metricList = [{ label:'Active incidents',value:metrics?.active_clusters,icon:Layers },{ label:'Review pending',value:metrics?.pending_verification_reports,icon:ShieldCheck },{ label:'Possible duplicates',value:duplicateValue,icon:CircleDot },{ label:'Backend queue',value:metrics?.pending_sync_reports,icon:Radio }];
   return <div className={selected ? 'dashboard detail-open' : 'dashboard'}><div className="page-heading"><div><span className="eyebrow">RESPONDER WORKSPACE</span><h1>Every report. A clearer response.</h1><p>Review local evidence and connect related sources with care.</p></div><Button variant="outline" disabled={busy} onClick={() => setReload(n => n + 1)}><RefreshCw size={16} className={busy ? 'spin' : ''}/>Refresh</Button></div>
     {error && <div className="error" role="alert">{error}<p>Check Connection settings and start the backend. Saved device reports remain in Queue.</p></div>}
-    <div className="metrics-strip">{metricList.map(({ label,value,icon:Icon }) => <div key={label} className="metric"><div><span>{label}</span><strong>{value ?? '—'}</strong></div><span className="metric-icon"><Icon size={19}/></span></div>)}</div>
+    <div className="metrics-strip">{metricList.map(({ label,value,icon:Icon }) => <div key={label} className={`metric ${typeof value === 'string' ? 'metric-state' : ''}`}><div><span>{label}</span><strong className={typeof value === 'string' ? 'metric-unavailable' : ''}>{value ?? '—'}</strong></div><span className="metric-icon"><Icon size={19}/></span></div>)}</div>
+    {metrics?.matching_available === false && <div className="matching-warning">{metrics.matching_warning ?? 'Semantic matching is unavailable.'} Responders can still inspect sources and group incidents manually.</div>}
     <div className="hub-note"><CheckCircle2 size={14}/> Showing sources delivered to the simulated hub <span>Device reports are listed separately in Queue.</span></div>
     <div className="dashboard-grid"><section className="incident-workspace"><div className="list-toolbar"><h2>Incident overview <span>{filtered.length}</span></h2><SlidersHorizontal size={18}/></div>
       <div className="filter-row"><label className="search-input"><Search size={17}/><input aria-label="Search incidents" placeholder="Search location, needs or reports" value={query} onChange={e => setQuery(e.target.value)}/></label><select aria-label="Verification filter" value={status} onChange={e => setStatus(e.target.value)}><option value="all">All statuses</option><option value="pending">Review pending</option><option value="verified">Verified</option></select></div>

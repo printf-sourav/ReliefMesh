@@ -1,5 +1,7 @@
 @import "tailwindcss";
 :root { font-family: 'Manrope', sans-serif; color: #172b36; background: #f4f7f8; font-synthesis: none; --border:#dce5e8; --muted:#526672; --primary:#0f766e; }
+.metric strong.metric-unavailable { font-size:17px; letter-spacing:-.3px; color:#805915; line-height:36px; }
+.metric-state .metric-icon { display:none; }
 * { box-sizing: border-box; } body { margin:0; font-size:16px; } a { color:inherit; text-decoration:none; } button,input,textarea,select { font:inherit; } button,a,input,textarea,select { -webkit-tap-highlight-color:transparent; }
 button { cursor:pointer; } button:disabled { opacity:.55; cursor:not-allowed; } :focus-visible { outline:3px solid #16a399; outline-offset:3px; }
 h1,h2,h3,p { margin-top:0; } h1 { font-size:32px; letter-spacing:-1.2px; line-height:1.2; margin:8px 0 10px; } h2 { font-size:20px; letter-spacing:-.4px; } h3 { font-size:16px; } p { line-height:1.65; } small,.muted { color:var(--muted); } .muted { font-size:14px; } .eyebrow { font-size:11px; font-weight:700; color:var(--primary); letter-spacing:1.7px; } .button { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:44px; padding:10px 16px; border:1px solid transparent; border-radius:9px; font-weight:600; font-size:14px; transition:background .15s; }
