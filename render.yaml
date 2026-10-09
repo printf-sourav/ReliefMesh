@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: reliefmesh-demo
+    runtime: docker
+    repo: https://github.com/printf-sourav/ReliefMesh
+    branch: feature/frontend-demo
+    plan: 0.5c-512mb
+    autoDeployTrigger: 'off'
+    healthCheckPath: /api/v1/health
+    disk:
+      name: reliefmesh-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: RELIEFMESH_DB_PATH
+        value: /var/data/reports.db
+      - key: RELIEFMESH_UPLOAD_DIR
+        value: /var/data/uploads
+      - key: RELIEFMESH_AI_MODE
+        value: live
+      - key: RELIEFMESH_AI_BACKEND
+        value: huggingface
+      - key: RELIEFMESH_MODEL_ID
+        value: google/gemma-4-31B-it
+      - key: RELIEFMESH_EMBEDDING_MODE
+        value: disabled
+      - key: RELIEFMESH_ALLOW_MODEL_DOWNLOAD
+        value: false

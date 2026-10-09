@@ -1,11 +1,13 @@
 import logging
 import os
+from pathlib import Path
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException
 
 from api.routes import router
@@ -54,6 +56,9 @@ def create_app() -> FastAPI:
         return error_response(500, "INTERNAL_ERROR", "The request could not be completed.")
 
     app.include_router(router, prefix="/api/v1")
+    frontend_dir = os.getenv("RELIEFMESH_FRONTEND_DIR")
+    if frontend_dir:
+        app.mount("/", StaticFiles(directory=Path(frontend_dir).resolve(), html=True), name="responder-web")
     return app
 
 
