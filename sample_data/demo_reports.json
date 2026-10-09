@@ -1,0 +1,53 @@
+[
+  {
+    "case": "A",
+    "original_text": "City School ke paas pura road flooded hai.",
+    "location": "City School",
+    "analysis": {
+      "incident_type": "Road Flooding",
+      "summary": "A flooded road is reported near City School.",
+      "people_affected": null,
+      "vulnerable_people": [],
+      "reported_needs": [],
+      "location_context": "City School",
+      "language": "Hindi/Hinglish",
+      "image_observations": [],
+      "confidence": null,
+      "verification_required": true
+    }
+  },
+  {
+    "case": "B",
+    "original_text": "Cannot cross road near City School because of flooding.",
+    "location": "City School",
+    "analysis": {
+      "incident_type": "Road Flooding",
+      "summary": "A flooded road is reported near City School.",
+      "people_affected": null,
+      "vulnerable_people": [],
+      "reported_needs": ["road access"],
+      "location_context": "City School",
+      "language": "English",
+      "image_observations": [],
+      "confidence": null,
+      "verification_required": true
+    }
+  },
+  {
+    "case": "C",
+    "original_text": "Hamare ghar mein paani aa gaya hai. Chaar log hain. Ek elderly person hai aur drinking water chahiye.",
+    "location": "Riverside Colony",
+    "analysis": {
+      "incident_type": "Residential Flooding",
+      "summary": "Flood water has entered a residence; drinking water is requested.",
+      "people_affected": 4,
+      "vulnerable_people": ["elderly person"],
+      "reported_needs": ["drinking water"],
+      "location_context": "Riverside Colony",
+      "language": "Hindi/Hinglish",
+      "image_observations": [],
+      "confidence": null,
+      "verification_required": true
+    }
+  }
+]

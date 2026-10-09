@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "source_commit": "089c8d6c48276fcbb22bcbb555c49372e9670f0d",
+  "report_id": "07444900-a611-4f5b-bafe-36e7472da099",
+  "client_report_id": "27b38254-a833-48e6-a694-4e7dc0ee1b11",
+  "originalAndCitizenEditPreserved": true,
+  "imageSha256": "6983ebd4b99d93f869513d4528c49e01873c444187fc88f4d4a1071a9d914d6e",
+  "verification_status": "verified",
+  "matchingAvailable": true,
+  "receipt": {
+    "client_report_id": "27b38254-a833-48e6-a694-4e7dc0ee1b11",
+    "report_id": "07444900-a611-4f5b-bafe-36e7472da099",
+    "accepted_at": "2026-10-09T08:29:32.757750+00:00",
+    "sync_status": "synced"
+  },
+  "inferenceRequests": 0,
+  "pageErrors": [],
+  "testedAt": "2026-10-09T08:48:53.384Z",
+  "description": "Final production UI reopens the previously verified live source; no new inference."
+}

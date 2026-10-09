@@ -1,0 +1,47 @@
+{
+  "source_commit": "9d4befc61d658cdfe126fb57fd356cfa607eccb5",
+  "results": [
+    {
+      "name": "fixture dashboard, selection and search",
+      "status": "passed"
+    },
+    {
+      "name": "human grouping, correction, verification and separation",
+      "status": "passed"
+    },
+    {
+      "name": "layouts at 320px",
+      "status": "passed"
+    },
+    {
+      "name": "layouts at 390px",
+      "status": "passed"
+    },
+    {
+      "name": "layouts at 768px",
+      "status": "passed"
+    },
+    {
+      "name": "layouts at 1440px",
+      "status": "passed"
+    },
+    {
+      "name": "fixture form with separate original and citizen edits",
+      "status": "passed"
+    },
+    {
+      "name": "website and citizen preview keep their routes separate",
+      "status": "passed"
+    },
+    {
+      "name": "dialog focus trap and return",
+      "status": "passed"
+    },
+    {
+      "name": "production unreachable API save survives reload; ack-only reconnect; one UUID",
+      "status": "passed"
+    }
+  ],
+  "pageErrors": [],
+  "fixtureConsoleErrors": []
+}

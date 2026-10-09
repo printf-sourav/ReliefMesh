@@ -2,6 +2,8 @@
 
 Developer 2 owns an installable **ReliefMesh-demo.apk**, using the same React frontend via Capacitor. This is a demo debug build signed with the standard debug key, not a Play Store release. No iOS or separate React Native application is requested.
 
+Current UI: Android has Report/My reports with plain wording and nearby team sharing; all responder dashboard tools are on the web. Follow [the current UI contract](web-mobile-ui-split.md). The [latest APK manifest](frontend-review-evidence/apk-verification.json) and [phone evidence](frontend-review-evidence/android-ui-split.json) supersede earlier artifact milestones.
+
 ## Required implementation
 
 - `frontend/capacitor.config.ts`: app name ReliefMesh, app ID `org.reliefmesh.app`, `webDir: "dist"`.
@@ -27,6 +29,8 @@ cd android
 ```
 
 Expected generated file: `frontend/android/app/build/outputs/apk/debug/app-debug.apk`. Copy the final output to a user-accessible artifact path as `ReliefMesh-demo.apk`; include its absolute download link and checksum in the handoff. Source/config/build commands alone do not satisfy APK delivery. Preserve source if tooling is unavailable and report exactly what prevented the binary/device test; never pretend a responsive page is an APK.
+
+Current delivered artifact: `artifacts/ReliefMesh-demo.apk`, source `ac39a8b696137ac84aed17413a22e10c53bbe68b`, SHA-256 `8487c7a327982128f13bfea4c5093d6e1185835923c9b5199e9edec5fd8283c9`. Signature, identity/native plugin and 47 bundled files verify. Installation and single-phone offline/discovery/reconnect checks pass on Android 16; two-phone transfer remains pending. See [actual delivery evidence](integration-continuation-2026-10-09.md).
 
 ## Backend reachability
 

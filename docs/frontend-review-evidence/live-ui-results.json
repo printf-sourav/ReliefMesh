@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "analysis_mode": "live",
+  "model_id": "google/gemma-4-31B-it",
+  "report_id": "07444900-a611-4f5b-bafe-36e7472da099",
+  "client_report_id": "27b38254-a833-48e6-a694-4e7dc0ee1b11",
+  "originalAndCitizenEditPreserved": true,
+  "imageSha256": "6983ebd4b99d93f869513d4528c49e01873c444187fc88f4d4a1071a9d914d6e",
+  "verification_status": "verified",
+  "matchingAvailable": true,
+  "receipt": {
+    "client_report_id": "27b38254-a833-48e6-a694-4e7dc0ee1b11",
+    "report_id": "07444900-a611-4f5b-bafe-36e7472da099",
+    "accepted_at": "2026-10-09T13:59:32.75775+05:30",
+    "sync_status": "synced"
+  },
+  "inferenceRequests": 1,
+  "pageErrors": [],
+  "photoProvenance": "Explicit synthetic test illustration, no real emergency",
+  "testedAt": "2026-10-09T08:29:34.312Z",
+  "source_commit": "0a0f8647141cc4f77116ef80e74edfc7dc373d25"
+}

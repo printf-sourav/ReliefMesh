@@ -1,0 +1,4 @@
+# Optional local semantic matching runtime. Install after the core backend.
+sentence-transformers==5.7.0
+# Windows CPU builds can be installed from https://download.pytorch.org/whl/cpu
+torch==2.14.1

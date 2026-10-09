@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "mode": "explicit backend fixture; no live inference",
+  "multipartOriginalAndEdits": true,
+  "imageRetrieval": true,
+  "devicePhotoReload": true,
+  "reconnectDeferredUpload": true,
+  "reportCount": 4,
+  "backendRestartPersistence": true,
+  "simulatedOfflineRestartAndRepeatSync": true,
+  "correctionResetsVerification": true,
+  "deferredVerificationRejected": true,
+  "savedSourceAnalysis": true,
+  "humanGrouping": true,
+  "matchingUnavailableVisible": true,
+  "deliveryReceipt": true,
+  "permanentRejectionRecovery": true,
+  "pageErrors": [],
+  "missingRoutes": []
+}

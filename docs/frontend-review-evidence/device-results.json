@@ -1,0 +1,41 @@
+{
+  "status": "passed",
+  "appPlatform": "android",
+  "androidVersion": "16",
+  "source_commit": "ac39a8b696137ac84aed17413a22e10c53bbe68b",
+  "apkSha256": "8487c7a327982128f13bfea4c5093d6e1185835923c9b5199e9edec5fd8283c9",
+  "nativePickerLaunchAndCancel": true,
+  "androidBackClosesDialog": true,
+  "photoInjection": "Dedicated CDP test input; native selection itself not yet exercised",
+  "offlineQueue": true,
+  "client_report_id": "53e908da-423c-4ff0-8d52-658f25b4f16e",
+  "imageSha256": "6983ebd4b99d93f869513d4528c49e01873c444187fc88f4d4a1071a9d914d6e",
+  "original_text": "DEMO ONLY — synthetic phone offline test, no real emergency. Flooded road near the demonstration school; two adults need drinking water.",
+  "location": "ReliefMesh single-phone offline acceptance",
+  "layout": {
+    "width": 433,
+    "documentWidth": 433,
+    "navigationBottom": 964.266716003418,
+    "height": 964
+  },
+  "pageErrors": [],
+  "forceCloseReopen": true,
+  "apiReconnect": true,
+  "testedAt": "2026-10-09T09:09:50.167Z",
+  "discoveryRunning": true,
+  "nativeGroupPersistedAcrossApkUpdate": true,
+  "originalRetainedAcrossApkUpdate": true,
+  "serverRecordCountForUuid": 1,
+  "receipt": {
+    "client_report_id": "53e908da-423c-4ff0-8d52-658f25b4f16e",
+    "report_id": "1abd5241-5080-4084-a58a-887f6c9e7aff",
+    "accepted_at": "2026-10-09T09:09:18.017040+00:00",
+    "sync_status": "synced"
+  },
+  "receiptOrigin": "http://127.0.0.1:8080",
+  "deviceSourceRemovedAfterReceipt": true,
+  "inferenceRequests": 0,
+  "twoPhoneTransferTested": false,
+  "foregroundPauseResume": true,
+  "installedApkChecksumVerified": true
+}
